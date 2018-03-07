@@ -2,6 +2,7 @@
 
 ### Threading Performance 101
 
+
 ***Ep 01***
 
 Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`. If your LameWork is longer, it will cause **dropped frame**. So you must get all of your heavy workload **off** UI (main) thread and communicate back when all of the work are done. Android provide many ways to do so:
@@ -12,6 +13,7 @@ Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`.
 * [IntentService](https://developer.android.com/reference/android/app/IntentService.html): Helps get intents work off the UI thread.
 
 Another thing need to care is memory. Threading and memory never really played well together. It can cause **memory leaks** (inner class `AsyncTask`, `Activity` get destroyed when many threads are still running,..)
+
 
 ***Ep 02***
 
@@ -29,6 +31,7 @@ And the combination of all these things together is a `HandlerThread`.
 
 When an app run, the system create for it a process which contain a thread of execution called main thread or UI thread, which is just a `HandlerThread`.
 
+
 ***Ep 03***
 
 * View can be reference from worker thread to update UI after execute some jobs, but this view can be **removed** from the view hierachy **before the jobs done**.
@@ -39,6 +42,7 @@ When an app run, the system create for it a process which contain a thread of ex
 
 * Should NOT hold references to any type of UI objects in any of threading scenarios. But how? Use a unique **update function (WorkRecords)** to update new information for the views or drop the work if the view is NOT there anymore.
 
+
 ***Ep 04***
 
 * All `AsyncTask` created will **share the same thread** and thus will [execute in a serial fashion](https://stackoverflow.com/questions/18661288/android-two-asynctasks-serially-or-parallel-execution-the-second-is-freezing) from a **single message queue**. So if the `AsyncTask` take too long to complete it will **freeze the thread** from doing future work (Unless you use `Executor` with thread pool).
@@ -48,8 +52,26 @@ When an app run, the system create for it a process which contain a thread of ex
 
 * Non-static nested or **inner AsyncTask** will create an **implicit references** to the outer enclosing class. So Activity and entire view hierachy that use inner AsyncTask will be **leaked** if it get **destroyed before the AsyncTask work completed**, GC will NOT mark/swipe the destroyed Activity instance because there is still an implicit reference from AsyncTask to it, and AsyncTask is still running.
 
+
+***Ep 05***
+
+* By default, `AsyncTask` execute serially on another thread which mean that dealing with an 8Mpxs block of data might stall other `AsyncTask`'s packages that UI thread are waiting for. And this is exactly what `HandlerThread` is for, it effectively a long-running thread that grabs work from a message queue and operates on it, usually when need update multiple UI elements or have repeating tasks.
+  Eg: Delegate Camera.open() to HandlerThread, so the preview frames callback will land on the HandlerThread rather than blocking UI or AsyncTask thread.
+
+* When create a `HandlerThread` set thread priority for it based on the type of work is doing. Because CPU can only handle a small number of thread in parallel. By setting priority you help the system know the right ways to schedule jobs.
+
+
+***Ep 06***
+
+* `ThreadPoolExecutor` let you spin up a number of threads and toss blocks of work to execute on it, handle all heavy lifting of spinning up the threads, load balancing work across those threads, even killing those threads when they've been idle for a while.
+
+* When creating thread pool, we can specify the number of initial threads and the number of maximum threads as the workload in the thread pool changes it will scale the number of alive thread to match.
+
+
 **References:**
 1. [Threading Performance 101](https://www.youtube.com/watch?v=qk5F6Bxqhr4).
 2. [Understanding Android Threading](https://www.youtube.com/watch?v=0Z5MZ0jL2BM)
 3. [Memory & Threading](https://www.youtube.com/watch?v=tBHPmQQNiS8)
 4. [Good AsyncTask Hunting](https://www.youtube.com/watch?v=jtlRNNhane0)
+5. [Getting a HandlerThread](https://www.youtube.com/watch?v=adPLIAnx9og)
+6. [Swimming in Threadpools](https://www.youtube.com/watch?v=uCmHoEY1iTM)
