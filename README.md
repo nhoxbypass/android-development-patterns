@@ -1,4 +1,5 @@
-# Android Performance Notes
+# Android Development Patterns Notes
+
 Notes, logs and code about Android Development Patterns especially Performance Patterns. #BuildBetterApps #PERFMATTERS
 
 ## Contents
