@@ -239,15 +239,15 @@ To resolve conflict, race condition Java sync is NOT enough -> blocking thread.
 
 * **Java Collections overview**
 
-![Collection overview](./../resources/IMG_20180311_150117_HDR.jpg "Collection overview")
+![Collection overview](./resources/IMG_20180311_150117_HDR.jpg "Collection overview")
 
 * **Java Collections abstraction**
 
-![Collection abstraction](./../resources/IMG_20180311_150248_HDR.jpg "Collection abstraction")
+![Collection abstraction](./resources/IMG_20180311_150248_HDR.jpg "Collection abstraction")
 
 * **Map and Dictionary**
 
-![Map and dictionary](./../resources/IMG_20180311_150219_HDR.jpg "Map and dictionary")
+![Map and dictionary](./resources/IMG_20180311_150219_HDR.jpg "Map and dictionary")
 
 
 #### Enumerator vs Iterator
