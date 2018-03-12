@@ -41,7 +41,9 @@ All stored in RAM. But thread have it own stack but share heap memory.
 
 ## Android heap
 
-Android heap contain Java heap, native heap and ashmem.
+**Android heap contain Java heap, native heap and ashmem**. 
+
+Note that memory usage on modern operating systems like Linux is an extremely [complicated and difficult to understand area](https://stackoverflow.com/questions/2298208/how-do-i-discover-memory-usage-of-my-application-in-android). 
 
 Android limit heap size per process.
 Max heap size is vary [by screen resolution](https://stackoverflow.com/a/5352488/5282585). As higher-resolution screens tend to want to manipulate larger bitmaps -> need more heap -> Google makes heap size recommendations and hope device manufacturers will abide by.
@@ -62,9 +64,19 @@ Max heap size is vary [by screen resolution](https://stackoverflow.com/a/5352488
 |        |       |         | Major GC |        |
 
 
+## Native heap
+
+The native heap used by the C++ `new` operator. There is much more memory available here. The app is limited only by the physical memory available on the device. There is no garbage collection and nothing to slow things down. However, C++ programs are responsible for freeing every byte of memory they allocate, or they will leak memory and eventually crash. 
+
+The native heap is managed by `dlmalloc()`, which uses a combination of `mmap()` and standard calls like `sbrk()` to allocate memory. The managed ("Dalvik") heap is (mostly) one large chunk allocated with `mmap()`. It's all running on top of the Linux kernel.
+
+
 ## Ashmem (ashmem.c)
 
-* Share memory between process using memory maps by name (auto clean).
+* short term for **Android Shared Memory**.
+* This operates much like the native heap but has additional system calls.
+* Share memory between process using memory maps by name.
+* Android can "unpin" the memory rather than freeing it. This is a lazy free; the memory is freed only if the system actually needs more memory. Then "pin" later on when device have enough memory back.
 * Better support low-mem devices because it can discard shared mem unit under memory pressure.
 * Removed in Android 5.0 and higher.
 * Using C.
