@@ -1,9 +1,9 @@
 # Android Performance Notes
 
-### Threading Performance 101
+## Threading Performance 101
 
 
-***Ep 01***
+#### Ep 01
 
 Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`. If your LameWork is longer, it will cause **dropped frame**. So you must get all of your heavy workload **off** UI (main) thread and communicate back when all of the work are done. Android provide many ways to do so:
 
@@ -15,7 +15,7 @@ Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`.
 Another thing need to care is memory. Threading and memory never really played well together. It can cause **memory leaks** (inner class `AsyncTask`, `Activity` get destroyed when many threads are still running,..)
 
 
-***Ep 02***
+#### Ep 02
 
 * Since thread will **die** when run out of work, so you need to always have some sort of **loop running** on the thread.
   
@@ -32,7 +32,7 @@ And the combination of all these things together is a `HandlerThread`.
 When an app run, the system create for it a process which contain a thread of execution called main thread or UI thread, which is just a `HandlerThread`.
 
 
-***Ep 03***
+#### Ep 03
 
 * View can be reference from worker thread to update UI after execute some jobs, but this view can be **removed** from the view hierachy **before the jobs done**.
 
@@ -43,7 +43,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Should NOT hold references to any type of UI objects in any of threading scenarios. But how? Use a unique **update function (WorkRecords)** to update new information for the views or drop the work if the view is NOT there anymore.
 
 
-***Ep 04***
+#### Ep 04
 
 * All `AsyncTask` created will **share the same thread** and thus will [execute in a serial fashion](https://stackoverflow.com/questions/18661288/android-two-asynctasks-serially-or-parallel-execution-the-second-is-freezing) from a **single message queue**. So if the `AsyncTask` take too long to complete it will **freeze the thread** from doing future work (Unless you use `Executor` with thread pool).
   Eg: If you kick off 20 work orders and the 3rd take an hour -> the other 17 will be blocked and wait!
@@ -53,7 +53,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Non-static nested or **inner AsyncTask** will create an **implicit references** to the outer enclosing class. So Activity and entire view hierachy that use inner AsyncTask will be **leaked** if it get **destroyed before the AsyncTask work completed**, GC will NOT mark/swipe the destroyed Activity instance because there is still an implicit reference from AsyncTask to it, and AsyncTask is still running.
 
 
-***Ep 05***
+#### Ep 05
 
 * By default, `AsyncTask` execute serially on another thread which mean that dealing with an 8Mpxs block of data might stall other `AsyncTask`'s packages that UI thread are waiting for. And this is exactly what `HandlerThread` is for, it effectively a long-running thread that grabs work from a message queue and operates on it, usually when need update multiple UI elements or have repeating tasks.
   Eg: Delegate Camera.open() to HandlerThread, so the preview frames callback will land on the HandlerThread rather than blocking UI or AsyncTask thread.
@@ -61,11 +61,42 @@ When an app run, the system create for it a process which contain a thread of ex
 * When create a `HandlerThread` set thread priority for it based on the type of work is doing. Because CPU can only handle a small number of thread in parallel. By setting priority you help the system know the right ways to schedule jobs.
 
 
-***Ep 06***
+#### Ep 06
 
 * `ThreadPoolExecutor` let you spin up a number of threads and toss blocks of work to execute on it, handle all heavy lifting of spinning up the threads, load balancing work across those threads, even killing those threads when they've been idle for a while.
 
 * When creating thread pool, we can specify the number of initial threads and the number of maximum threads as the workload in the thread pool changes it will scale the number of alive thread to match.
+
+
+#### Ep 07
+
+[IntentService](https://developer.android.com/reference/android/app/IntentService.html) helps get intents work off the UI thread.
+
+* `AsyncTask` does NOT really help when there is no UI. `HandlerThread` while you're not receiving intents, the thread is still sitting around and taking up resources. But there is a third option - `IntentService` - a hybrid between a service and a `HandlerThread` (it extends the `Service` class but internally create a `HandlerThread` to deal with all coming intents).
+
+* The `HandlerThread` process work from a work queue, it means a task that take a long time to complete will block other queued up intents.
+
+* Can use `BroadcastReceiver` to communicate and update UI. But there is a more performant way is use `LocalBroadCastManager` to [report work status](https://developer.android.com/training/run-background-service/report-status.html#ReportStatus) or just use `runOnUiThread()` method after work complete to push a block of work into UI thread handler.
+
+* Use `IntentService` put app into middle of two states "has foreground activity" and "NO foreground activity". Help app a little less likely to be killed by the system. 
+
+
+#### Ep 08
+
+What do we do with the threaded work when the activity that kicked it off is no longer alive? 
+If a thread hold a strong reference to the views to update when work complete, BUT the activity end before the work complete -> the activity and entire views tree will be keep on memory until that work finished -> memory leaks. And even the late updates of the thread to these views are wasted, because they are no longer visible!
+
+Use [Loaders](https://developer.android.com/guide/components/loaders.html)!
+
+* Loaders are wise to the inner working of the activity lifecycle, so you can ensure your work end in the right place everytime! Resistant to memory leaks, always update the correct views and never repeat unnescessarily.
+
+* Instead of kicking off your work on `AsyncTask` or some other threads, ask your activity for instance of a [LoaderManager](https://developer.android.com/reference/android/app/LoaderManager.html). Send the work to the manager and it will make sure your work will be handle properly. 
+
+* The `LoaderManager` also cache the work results so that won't be repeated with future changes.
+
+* When an activity with an active loader is popped out of the stack and never return, the `LoaderManager` made a callback saying the result will never be used. Use this callback to abort the work, clean up, and move on without waste anymore resources.
+
+
 
 
 **References:**
@@ -75,3 +106,5 @@ When an app run, the system create for it a process which contain a thread of ex
 4. [Good AsyncTask Hunting](https://www.youtube.com/watch?v=jtlRNNhane0)
 5. [Getting a HandlerThread](https://www.youtube.com/watch?v=adPLIAnx9og)
 6. [Swimming in Threadpools](https://www.youtube.com/watch?v=uCmHoEY1iTM)
+7. [The Zen of IntentService](https://www.youtube.com/watch?v=9FweabuBi1U)
+8. [Threading and Loaders](https://www.youtube.com/watch?v=s4eAtMHU5gI)
