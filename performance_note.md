@@ -113,6 +113,28 @@ Priorities are assigned in a couple of ways.
 See the reference video.
 
 
+#### Ep 11
+
+With pieces of data that will be used multiple times, fetch it from the network and cache on the device. But by default, HTTP Caching is disabled for Android apps.
+
+Turn caching on using [HttpResponseCache](https://developer.android.com/reference/android/net/http/HttpResponseCache.html) which allow you to define a **location** on the device and the **max size** of the cache. From now, all the HTTP response will be cached on the file system.
+
+With HTTP response cache, data is evicted from the device in `2` ways: First, if the cache fills up, the system will delete the oldest unused files to make room for the new. Second, files will be removed according to their `Cache-Control` header information which included in server's responses (Ex: `max-age=3600`).
+
+The drawbacks is: API server can decide to cache or not, cache values can conflict with physical resources on device,.. -> Write your **own Disk Cache management** (clone and modify the `DiskLRUCache`) or creating your **own caching logic** based on the type of the data and state of device.
+
+
+#### Ep 12
+
+**Do not over sync** data thru network. Because networking is the single biggest battery hog. It's not only drain battery to initialize the chip but then it keep awake for an additional `20-60` seconds after request completed.
+
+**Avoid pull server regularly for updates** (could wasting bandwidth, battery waiting for server telling you that nothing changed). Instead use [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) which will **let the server signal the app when there is new content**.
+
+Or when in cases that you have to sync in an specific time interval, if no new data is available **double length of the time interval** that need to wait until check again. Or adjust the time interval base on user activity or device's state (user is busy, device sleep mode, wifi connected, charge plugged in,..).
+
+Use [GCMNetworkManager](https://developers.google.com/android/reference/com/google/android/gms/gcm/GcmNetworkManager) to schedule network tasks and handle batching.
+
+
 
 **References:**
 1. [Threading Performance 101](https://www.youtube.com/watch?v=qk5F6Bxqhr4).
@@ -125,3 +147,5 @@ See the reference video.
 8. [Threading and Loaders](https://www.youtube.com/watch?v=s4eAtMHU5gI)
 9. [The Importance of Thread Priority](https://www.youtube.com/watch?v=NwFXVsM15Co)
 10. [Profile GPU Rendering : M Update](https://www.youtube.com/watch?v=erGJw8WDV74)
+11. [#Cachematters for networking](https://www.youtube.com/watch?v=7lxVqqWwTb0)
+12. [Optimizing Network Request Frequencies](https://www.youtube.com/watch?v=nDHeuEM30ks)
