@@ -150,10 +150,11 @@ On 3G a quality prefetch is about `1-5Mb` of data that user might need in the ne
 
 To adapting to latency means adjust how apps work based on the connectivity of the device.
 
-1. **Gather information about the speed and performance of the network**. Use [ConnectivityManager](https://developer.android.com/reference/android/net/ConnectivityManager.html) to determine if you are on mobile network, then get a network subtype to check with [this](/network_subtype.png) handy look up table to know which kind of network you are dealing with and what to expect the **best possible bandwidth and latency**. But in the real world you'll get much worse result not only from **slow network** but also **slow data server**. So a more accurate (but complex) solution is evaluate the "real" time it takes to grab response from this network.
+1. **Gather information about the speed and performance of the network**. Use [ConnectivityManager](https://developer.android.com/reference/android/net/ConnectivityManager.html) to determine if you are on mobile network, then get a network subtype to check with [this](/resources/network_subtype.PNG) handy look up table to know which kind of network you are dealing with and what to expect the **best possible bandwidth and latency**. But in the real world you'll get much worse result not only from **slow network** but also **slow data server**. So a more accurate (but complex) solution is evaluate the "real" time it takes to grab response from this network.
 2. **Design apps to respond to changes in bad latency environments**. You can define `2` thresholds and `3` bucket of classification. If your latency is less than `60ms` to load an asset then user is on great connection, you may be able to be **more** aggressive about the amount of **prefetching data** and **less** aggressive about things like **caching**. If the latency is between `60ms` and `220ms` you need to become **more** aggressive about **batching and caching** and **defer some data requests**. If the latency is above the max `220ms` you should find ways to defer more data requests, **only fetch critical data** until later when there might be a better network connection.
 
 Use [Emulator throttling](https://developer.android.com/studio/run/emulator.html#netspeed) to throttling the bandwidth or use [AT&T Network Attenuator](https://developer.att.com/blog/at-amp-t-network-attenuator) to test how your app respond when latency go sky high.
+
 
 
 **References:**
