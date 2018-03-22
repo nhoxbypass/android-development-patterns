@@ -3,7 +3,7 @@
 ## Threading Performance 101
 
 
-#### Ep 01
+#### Season 5 Ep 01
 
 Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`. If your LameWork is longer, it will cause **dropped frame**. So you must get all of your heavy workload **off** UI (main) thread and communicate back when all of the work are done. Android provide many ways to do so:
 
@@ -15,7 +15,7 @@ Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`.
 Another thing need to care is memory. Threading and memory never really played well together. It can cause **memory leaks** (using inner class `AsyncTask` then activity get destroyed but `AsyncTask`s & threads are still running and have have reference to this activity,..)
 
 
-#### Ep 02
+#### Season 5 Ep 02
 
 * Since thread will **die** when run out of work, so you need to ALWAYS have some sort of **loop running** on the thread.
   
@@ -31,7 +31,7 @@ And the combination of all these things together is a `HandlerThread`.
 When an app run, the system create for it a process which contain a thread of execution called main thread or UI thread, which is just a `HandlerThread`.
 
 
-#### Ep 03
+#### Season 5 Ep 03
 
 * View can be reference from worker thread to update UI after execute jobs, but this view can be **removed** from the view hierachy **before the jobs done**.
 
@@ -42,7 +42,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Should NOT hold references to any type of UI objects in any of threading scenarios. But how? Use a unique **update function** to update new information for the views **or drop** the work if the view is NOT there anymore.
 
 
-#### Ep 04
+#### Season 5 Ep 04
 
 * All `AsyncTask` created will **share the same thread** and thus will [execute in a serial fashion](https://stackoverflow.com/questions/18661288/android-two-asynctasks-serially-or-parallel-execution-the-second-is-freezing) from a **single message queue**. So if the `AsyncTask` take too long to complete it will **freeze the thread** from doing future work (Unless you use `Executor` with thread pool).
   Eg: If you kick off 20 work orders and the 3rd take an hour -> the other 17 will be blocked and wait!
@@ -52,7 +52,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Non-static nested or **inner class** will create an **implicit references** to the outer enclosing class. So Activity and entire view hierachy that use inner `AsyncTask` (most famous, well-known case) will be **leaked** if it get **destroyed before the AsyncTask work completed**, GC will mark reachable and will NOT swipe the destroyed Activity instance because there is still an implicit reference from `AsyncTask` to it, and `AsyncTask` is **still running**.
 
 
-#### Ep 05
+#### Season 5 Ep 05
 
 * By default, `AsyncTask` execute serially on another thread (already note above), which mean that dealing with an 8Mpxs block of data might stall other `AsyncTask`'s packages that UI thread are waiting for. And this is exactly what `HandlerThread` is for, it effectively a long-running thread that grabs work from a message queue and operates on it, usually when need update multiple UI elements or have repeating tasks.
   Eg: Delegate Camera.open() to HandlerThread, so the preview frames callback will land on the HandlerThread rather than blocking UI or AsyncTask thread.
@@ -62,14 +62,14 @@ When an app run, the system create for it a process which contain a thread of ex
 * Note that `HandlerThread`s run outside of your activity’s lifecycle, so they need to be cleaned up properly or else you will have thread leaks.
 
 
-#### Ep 06
+#### Season 5 Ep 06
 
 * `ThreadPoolExecutor` let you do more customization when using thread to make use of the number of processor available in the devices. It help you spin up a number of threads and toss blocks of work to execute on it, handle all heavy lifting of spinning up the threads, load balancing work across those threads, even killing those threads when they've been idle for a while.
 
 * When creating thread pool, we can specify the number of initial threads and the number of maximum threads as the workload in the thread pool changes it will **scale** the number of alive thread to match.
 
 
-#### Ep 07
+#### Season 5 Ep 07
 
 [IntentService](https://developer.android.com/reference/android/app/IntentService.html) helps get intents work off the UI thread.
 
@@ -82,7 +82,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Use `IntentService` put app into middle of two states "HAS foreground activity" and "NO foreground activity". Help app a little less likely to be killed by the system than just use only `Thread`.
 
 
-#### Ep 08
+#### Season 5 Ep 08
 
 What do we do with the threaded work when the activity that kicked it off is no longer alive? 
 
@@ -99,7 +99,7 @@ Use [Loaders](https://developer.android.com/guide/components/loaders.html)!
 * When an activity with an active loader is popped out of the stack and never return, the `LoaderManager` made a callback saying the result will never be used. Use this callback to abort the work, clean up, and move on without waste anymore resources.
 
 
-#### Ep 09
+#### Season 5 Ep 09
 
 Spawn too many threads into not enough CPUs is an old problem, thread scheduling has solved this by using various metrics to determine which thread gets the next slice of CPU time. Every thread is assigned a priority, the scheduler will **prefer more** to thread that are more important but **still ballance** with the need to eventually get all it's work done.
 
@@ -108,12 +108,12 @@ Priorities are assigned in a couple of ways.
 * When a thread is created by default it's given the **same priority and group memberships** as the "spawner" thread. So if UI thread spawn 20 other worker thread, they will all compete equally for CPU time allocation. -> Explicitly set the priority for any thread that you created in your application.
 
 
-#### Ep 10
+#### Season 5 Ep 10
 
 See the reference video.
 
 
-#### Ep 11
+#### Season 4 Ep 1
 
 With pieces of data that will be used multiple times, fetch it from the network and cache on the device. But by default, HTTP Caching is disabled for Android apps.
 
@@ -124,7 +124,7 @@ With HTTP response cache, data is evicted from the device in `2` ways: First, if
 The drawbacks is: API server can decide to cache or not, cache values can conflict with physical resources on device,.. -> Write your **own Disk Cache management** (clone and modify the `DiskLRUCache`) or creating your **own caching logic** based on the type of the data and state of device.
 
 
-#### Ep 12
+#### Season 4 Ep 2
 
 **Do not over sync** data thru network. Because networking is the single biggest battery hog. It's not only drain battery to initialize the chip but then it keep awake for an additional `20-60` seconds after request completed.
 
@@ -135,7 +135,7 @@ Or when in cases that you have to sync in an specific time interval, if no new d
 Use [GCMNetworkManager](https://developers.google.com/android/reference/com/google/android/gms/gcm/GcmNetworkManager) to schedule network tasks and handle batching.
 
 
-#### Ep 13
+#### Season 4 Ep 3
 
 **Prefetching** is about predicting what data would be in future request and grabbing all data now while there is an active radio connection.
 
@@ -146,7 +146,7 @@ But prefetching is a tricky balancing problem. Prefetch too little and you'll en
 On 3G a quality prefetch is about `1-5Mb` of data that user might need in the next `1-2` minutes of their active session. Modifying prefetch code to adjust/optimize **based on the quality of the user's connection** (the easiest way to determine the health of the network is simply how long it takes for some well-known pieces of content).
 
 
-#### Ep 14
+#### Season 4 Ep 4
 
 To adapting to latency means adjust how apps work based on the connectivity of the device.
 
@@ -155,6 +155,21 @@ To adapting to latency means adjust how apps work based on the connectivity of t
 
 Use [Emulator throttling](https://developer.android.com/studio/run/emulator.html#netspeed) to throttling the bandwidth or use [AT&T Network Attenuator](https://developer.att.com/blog/at-amp-t-network-attenuator) to test how your app respond when latency go sky high.
 
+
+#### Season 4 Ep 5
+
+Big asset files drain more battery & cost user money. So we need to **minimize the assets payload**. And there is two biggest candidates: Images and serialized data.
+
+1. For images, just change the type that you are using. If you don't need transparency **avoid using PNG file**, because they don't compress like JPEG or WEBP. And if you are already using JPEG, remember that a **small changes in quality can have a huge changes in file size** so you can crank down the quality settings of an image a significant amount before user start to notice any issues. So finding the right trade off between quality and size can be a huge win. There's really no reason to send a `4 Mpx` image down to device for only use as a thumbnail or smaller screen devices (like smart watches) can't even display full of it. So you can **store different quality & resolution of an image on your server** to optimize for the smallest possible file to be sent to the users.
+2. Serialized formats data (JSON, XML,..) jammed too much un-needed data to make them more readable by human, instead leveraging binary serialization formats as [proto buffs](https://developers.google.com/protocol-buffers/), [flat buffers](https://google.github.io/flatbuffers/) are all accessible on Android that can reduce data foodprint significantly. Any of data you serialize is going to be [GZIP compressed by HTTP stack](https://en.wikipedia.org/wiki/HTTP_compression) so you should adopting a [Struct-of-Arrays](https://www.youtube.com/watch?v=qBxeHkvJoOQ) format to help bundle similar typed fields together so the LZ stage of the GZIP compressor can do a better job finding symbol matches.
+
+#### Season 4 Ep 6
+
+Service aren't free (cost time & memory), service also run on UI thread so it can cause dropping frame. So **don't use Services of you don't have to!**
+
+If you must use Serivce, follow the one primary rule: **do not let services live longer than they are needed**. There are 2 distinct type of services with 2 distinct ways to terminate them. Started services that use `startService()` stay alive until they are explicitly stop with a `stopSelf()` or `stopService()` call (or your app ended). Bound services that use `bindService()` stays around consume resources until all of it's client unbind from it by calling `unnindService()` (or your app ended).
+
+Mixing these 2 types of service is useful but it's easy to cause error. Eg: create service using `startService()` then call `bindService()` for IPC communication, the problem is even client called `unbindService()` it will NOT terminate yet because it's waiting around for a `stopService()` to be called.
 
 
 **References:**
@@ -172,3 +187,5 @@ Use [Emulator throttling](https://developer.android.com/studio/run/emulator.html
 12. [Optimizing Network Request Frequencies](https://www.youtube.com/watch?v=nDHeuEM30ks)
 13. [Effective Prefetching](https://www.youtube.com/watch?v=GajI0uKyAGE)
 14. [Adapting to Latency](https://www.youtube.com/watch?v=uzboHWX3Kvc)
+15. [Minimizing Asset Payload](https://www.youtube.com/watch?v=ts5o6t7enOk)
+16. [Service Performance Patterns](https://www.youtube.com/watch?v=NJsq0TU0qeg)
