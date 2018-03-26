@@ -24,6 +24,39 @@
 | Forced to communicate via messages |  |
 
 
+## Threading
+
+#### Runnable
+
+A runnable isn't a background thread, it is a unit of work that can be run in a given thread.
+
+#### When to use Handler#post() and when to use Thread#start().
+
+* se `Handler.post()` whenever you want to do operations in the UI thread. So let's say in the callback (which is running in **separate thread**) you want to change a TextView's text, you should use `Handler.post()`.
+
+* If whatever you are doing is "heavy" you should be doing it in a Thread (That's why network operation is forced to do in a worker thread in Android). Interestingly when you are using a separate **worker thread** it is often useful to also use a `Handler` to communication between this working thread and the main UI thread.
+
+* Must note that: `Handler` and `Thread` are really 2 different things and do NOT contradict each other. `Handler` can be used to attach to a thread and provides a simple channel to send data to this thread. And a `Thread` is basically the core element of multithreading which a developer can use to get heavy payload work off main thread.
+
+* The difference between `Hander.post()` and `View.post()` is that Handler will run your code **on the thread the Handler instance was created on** (which is not necessarily the UI thread) because it will be attached to the only looper of this thread to communicate, while View will **always run it on the UI thread** (because views are bound to it).
+
+#### HandlerThread
+
+You would use `HandlerThread` in case that you want to perform long background tasks **sequentially**, one at a time and you want that those tasks will run at the order of execution. The HandlerThread has it's **own looper** and handlers could be created and post it, (so it would not block the main thread). And use the `Handler` inside it to communication between the worker thread and the caller thread.
+
+For more information related to performance, see [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-02) and [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-05).
+
+For real life example, look at [this](https://stackoverflow.com/questions/18149964/best-use-of-handlerthread-over-other-similar-classes).
+
+#### Ways to get work off main thread.
+
+1. Create new `Thread`: `Thread t = new Thread(new Runnable() {...});` then start it `t.start()`.
+2. Create a new [class](https://stackoverflow.com/questions/9671546/asynctask-android-example) that extends `AsyncTask`, and implement the code that need work off main thread inside `doOnBackground()` callback. Then write code to update result, UI inside `onPostExecute()` callback. Finally init and `execute()` this task.
+3. Create a new `HandlerThread` and start the same as normal Thread. And use Handler to communicate. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
+4. Create a new class that extends `IntentService` and implement it. Then trigger start using an Intent to pawns a new worker thread. See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
+
+See [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-01) to see when to use which approach.
+
 ## Stack vs Heap in memory
 
 All stored in RAM. But thread have it own stack but share heap memory.
@@ -119,20 +152,25 @@ GC also have many disadvantages such as consuming additional resources, performa
 ## Memory leaks
 
 #### Unregister listener
+
 Without calling the unregister method, the instance will probably **keep a reference** around long after the referenced object has been terminated and will thus start leaking memory. But it [depends](https://stackoverflow.com/a/5010949/5282585) on what those listeners are registered upon.
 Eg: a well-written `OnClickListener` for a button should not result in a memory leak. However, a `LocationListener`, registered with the `LocationManager` system service, is held by the process. Hence, even if the activity is destroyed, the listener will remain registered. If that listener is an inner class, it will continue to hold an implicit reference to the activity, and you will have a memory leak.
 
 #### Non-static nested class (inner class)
-Inner class hold a **strong implicit reference** to outer enclosing class.
+
+Inner class hold a **strong implicit reference** to outer enclosing class. So Activity and entire view hierachy that use inner AsyncTask (most famous, well-known case) will [be leaked](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-04) if it get destroyed before the AsyncTask work completed.
 -> Use static nested class, send objects that needed from instance of outer class through constructor and hold inside `<WeakReference>`.
 
 #### Anonymous Class
+
 Also an inner class. It usually cause memory leaks by an object have reference to this anonymous class without any information about it's outer container object, when the outer container object not use anymore, but the anonymous class still alive (because of still have a reference from outside) then this anonymous class and entire outer container object leaks and cannot be GC.
 
 #### Bitmap
+
 -> Remember to `setBackgroundResource(null)` and `recycle()` bitmaps after use.
 
 #### Context
+
 Can leak entire Activity + view tree when device roration.
 -> Avoid static context, use `getApplicationContext()` for long-live object.
 
@@ -140,6 +178,8 @@ Can leak entire Activity + view tree when device roration.
 
 
 ## Loader
+
+* What do we do with the threaded work when the activity that kicked it off is no longer alive? See [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-08).
 
 * Help **loading data in worker thread** to avoid ANR due to performing potentially slow queries.
 
@@ -167,21 +207,26 @@ If you’ve been using retained Fragments (those that call `setRetainInstance(tr
 ## How to increase Android App Performance?
 
 #### Avoid slow rendering:
+
 * System draw app's screen after every 1000/60FPS = `16.7ms`. If our app CANNOT complete logic in `16.7ms` it will force system to **drop frame** which called a [jank](https://developer.android.com/topic/performance/vitals/render.html#identify). 
 * To avoid it we can: use [Layout Inspector](https://developer.android.com/studio/debug/layout-inspector.html), [profile GPU rendering](https://developer.android.com/topic/performance/rendering/profile-gpu.html), use `ConstrainLayout` to reduce nested layout, move `onMeasure`, `onLayout` to background thread, use `match_parent`. 
 * Long-running task should run asynchronous outside UI thread.
 * Avoid nested `RecyclerView`, avoid call `notifyDatasetChanged()` in RV adapter with small update. Use [RV Prefetch](https://medium.com/google-developers/recyclerview-prefetch-c2f269075710) to reduce the cost of inflation in most case by doing the work ahead of time, while UI thread is idle. RV `onBindViewHolder()` called on UI thread -> it should be very simple, and take much less than one millisecond for all but the most complex items, it should only get data from POJO and update ui.
 
 #### App lauching time:
+
 We can reduce app lauching time by: Lazy load resources. Allow app to load and display views first, then update visual which depend on bitmap and other resources.
 
 #### Layout:
+
 Optimize layout hierachy to avoid nested `LinearLayout` that use `layout_weight` or nested `RelativeLayout`. Reuse layout using `<include>` or `<merge>`. Use dynamic views with views rarely use. Use `RecyclerView` instead of the old `ListView`. Apply `ViewHolder` pattern for lists. Use `lint` tool to check layouts.
 
 #### Power usage:
+
 Reduce network call. Avoid [wake lock](https://developer.android.com/training/scheduling/wakelock.html). Use GPS and `AlarmManager` carefully. Perform [batch scheduling](https://developer.android.com/topic/performance/scheduling.html).
 
 #### Avoid using enum
+
 Enum cause bigger apk size, 4 byte reference + enum size.
 -> Use constants or [IntDef](https://stackoverflow.com/questions/32032503/enums-and-android-annotation-intdef) instead.
 
@@ -285,14 +330,18 @@ DVM is Android virtual machine which is optimized for mobile (memory, battery li
 ## Android Service
 
 * Only [one instance](https://stackoverflow.com/questions/22909600/running-multiple-instance-of-a-service) of specific service is allow to run at the same time.
+* The Service and IntentService may be triggered from any thread, activity or other application component.
 * Use `bindService()` when need to communicate between activity and service (thru service connection).
 * `START_STICKY` explicit started and stop aas needed, `START_NOT_STICKY` tell OS not to re-start service again when have enough memory (when service was killed before due to device run out of memory)
 
 | Service        | IntentService          |
 | -------------|---------------|
+| used in tasks with no UI, but shouldn't be too long ( If need to perform long or heavy tasks, must use threads within Service) | used in long tasks usually with no communication to main UI thread |
 | Main thread | New worker thread | 
-| Block main thread | Cannot run task in parallel |
-| Must call `stopSelf()` or `stopService()` | Do not have to call, auto shutdown when job done |
+| Block main thread | Cannot run task in parallel. Hence all the consecutive intents will go into the message queue for the worker thread and will execute sequentially |
+| Must call `stopSelf()` or `stopService()` if not use bounded service | Do not have to call, auto shutdown after all start requests have been handled |
+
+* For performance related stuffs of `IntentService` see [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-07).
 
 
 ## Race condition
