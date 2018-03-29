@@ -163,6 +163,7 @@ Big asset files drain more battery & cost user money. So we need to **minimize t
 1. For images, just change the type that you are using. If you don't need transparency **avoid using PNG file**, because they don't compress like JPEG or WEBP. And if you are already using JPEG, remember that a **small changes in quality can have a huge changes in file size** so you can crank down the quality settings of an image a significant amount before user start to notice any issues. So finding the right trade off between quality and size can be a huge win. There's really no reason to send a `4 Mpx` image down to device for only use as a thumbnail or smaller screen devices (like smart watches) can't even display full of it. So you can **store different quality & resolution of an image on your server** to optimize for the smallest possible file to be sent to the users.
 2. Serialized formats data (JSON, XML,..) jammed too much un-needed data to make them more readable by human, instead leveraging binary serialization formats as [proto buffs](https://developers.google.com/protocol-buffers/), [flat buffers](https://google.github.io/flatbuffers/) are all accessible on Android that can reduce data foodprint significantly. Any of data you serialize is going to be [GZIP compressed by HTTP stack](https://en.wikipedia.org/wiki/HTTP_compression) so you should adopting a [Struct-of-Arrays](https://www.youtube.com/watch?v=qBxeHkvJoOQ) format to help bundle similar typed fields together so the LZ stage of the GZIP compressor can do a better job finding symbol matches.
 
+
 #### Season 4 Ep 6
 
 Service aren't free (cost time & memory), service also run on UI thread so it can cause dropping frame. So **don't use Services of you don't have to!**
@@ -170,6 +171,29 @@ Service aren't free (cost time & memory), service also run on UI thread so it ca
 If you must use Serivce, follow the one primary rule: **do not let services live longer than they are needed**. There are 2 distinct type of services with 2 distinct ways to terminate them. Started services that use `startService()` stay alive until they are explicitly stop with a `stopSelf()` or `stopService()` call (or your app ended). Bound services that use `bindService()` stays around consume resources until all of it's client unbind from it by calling `unnindService()` (or your app ended).
 
 Mixing these 2 types of service is useful but it's easy to cause error. Eg: create service using `startService()` then call `bindService()` for IPC communication, the problem is even client called `unbindService()` it will NOT terminate yet because it's waiting around for a `stopService()` to be called.
+
+
+#### Season 4 Ep 7
+
+3rd party libraries help you with the heavy lifting, this is totally fine because many of these libs are heavily tested and have proven the stress of production, the problem is you may **have to import the entire lib when you're just use a subset**. The extra code is called code bloat and turned into overhead that get shipped with your APK. 
+
+At the simplest level, it will **increase the size of your APK**. Even more is the [64K method limit](https://developer.android.com/studio/build/multidex.html), because the Android Runtime assigns a numeric indentifier to each method with `16` bits wide so if you have more than `2^16` methods in your app, it will NOT be compiled. 
+
+To overcome this, you need **MultiDex**, and trust me you do NOT want to do that. 
+
+Fortunately there is a tool in the Android tool chain that great for hunting down unused code and stripping it from you build. [Proguard](https://developer.android.com/studio/build/shrink-code.html) is a tool that **shrinks, optimizes and obfuscates** your code by removing the unused parts. It also renames classes, fields and methods with semantically obscure names to make it **harder to reverse engineer** your code.
+
+Proguard is NOT so great sorting out other situations like code that uses reflection or code that get called from native code. This may end up giving some false positive when some code is removed and some is not (you can get `NoClassDefFoundError` or `MethodNotFoundException`,..). So you need to adjust Proguard settings based on what lib you are including.
+
+
+#### Season 4 Ep 8
+
+Just because you're being frugal your resources doesn't mean that the libs you are included will do the same, and stuff like this that leads to bloated APKs.
+
+Gradle toolchain can **statically analyze** all of your code to find the assets that **aren't being reference** and **automatically** pull them out of your build. To do this, enable the shink resources flag `shrinkResources true` inside your `app/build.gradle`.
+
+There is might be some false positives or false negatives when found some of your assets are getting cut when you want them kept and some of them kept but you want them cut. We can fix this will the `tools:keep` and `tools:discard` attributes to setup desired behavior. And note that Gradle will **ignore resources inside resolutions or multiple language folders** (drawable-hdpi, drawable-xhdpi, values-es, values-fr,..) because these can be needed at **runtime** and the compiler can't really know what user is going to need.
+
 
 
 **References:**
@@ -189,3 +213,5 @@ Mixing these 2 types of service is useful but it's easy to cause error. Eg: crea
 14. [Adapting to Latency](https://www.youtube.com/watch?v=uzboHWX3Kvc)
 15. [Minimizing Asset Payload](https://www.youtube.com/watch?v=ts5o6t7enOk)
 16. [Service Performance Patterns](https://www.youtube.com/watch?v=NJsq0TU0qeg)
+17. [Removing unused code](https://www.youtube.com/watch?v=5frxLkO4oTM)
+18. [Removing unused resources](https://www.youtube.com/watch?v=HxeW6DHEDQU)
