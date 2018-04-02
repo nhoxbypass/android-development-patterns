@@ -195,6 +195,29 @@ Gradle toolchain can **statically analyze** all of your code to find the assets 
 There is might be some false positives or false negatives when found some of your assets are getting cut when you want them kept and some of them kept but you want them cut. We can fix this will the `tools:keep` and `tools:discard` attributes to setup desired behavior. And note that Gradle will **ignore resources inside resolutions or multiple language folders** (drawable-hdpi, drawable-xhdpi, values-es, values-fr,..) because these can be needed at **runtime** and the compiler can't really know what user is going to need.
 
 
+#### Season 4 Ep 9
+
+Why computer have RAMs? They act as a data cache to **access recent information FAST - like SUPER fast - compared to having to get it from the hard drive or from the Internet**. This is basically what a cache is - **a place to store data that frequently used so that future uses happen as fast as possible**. Anytime that you have an overhead cost for computing, loading or finding a piece of data, a cache can help you do it faster and more effectively.
+
+The most common place for caching is when you have data that is **calculated multiple times but te result always be the same**. Eg: Place a variable that will NOT change the value inside a loop, and every single loop app will need to re-calculate it -> Wasted. Instead calculate one time and place it outside the loop.
+
+Cache helps manage resources for our limited resource environments. See [The Magic of LRU Cache](https://www.youtube.com/watch?v=R5ON3iwx78M).
+
+Caching by pre-computing. Which spend time **offline ahead-of-time to calculate** a huge look up table or massive XML schema, so at runtime you can **simply fetch** that data rather than executing all that expensive overhead and let users wait.
+
+
+#### Season 4 Ep 10
+
+Approximation is all about c**utting corners and making things good enough for both users and developers**. **Do less, when you can**: Using less time, calculating a less precise result that still meets the user's current need. 
+
+Eg: Consider a trip planner app. While users are driving on a long road it's not necessary to poll the server for updates 
+exactly every 5 minutes. Instead, use batching and schedule request less pricisely and less frequently to [save battery](https://www.youtube.com/watch?v=fEEulSk1kNY). The app could also calculate a path between 2 cities on the trip and then use the estimated travel time to set an alarm to wake up, turn on the GPS and start offering suggestions again. 
+
+There are approximations as simple as **allowing images to be slightly lower resolution** in order to save memory space and increase rendering speed. Because when user is scrolling thru a list they don't need the fully detailed image yet. You can load that when they're stopping at some rows in the list. 
+
+For a large majority of your code, you don't need 100% exact result. By demanding less from the hardware and still giving users everytihing they need, you can potentially gain a lot of **frame rates** and device's **battery life**. 
+
+
 
 **References:**
 1. [Threading Performance 101](https://www.youtube.com/watch?v=qk5F6Bxqhr4).
@@ -215,3 +238,5 @@ There is might be some false positives or false negatives when found some of you
 16. [Service Performance Patterns](https://www.youtube.com/watch?v=NJsq0TU0qeg)
 17. [Removing unused code](https://www.youtube.com/watch?v=5frxLkO4oTM)
 18. [Removing unused resources](https://www.youtube.com/watch?v=HxeW6DHEDQU)
+19. [Perf Theory: Caching](https://www.youtube.com/watch?v=JkwrNmCwFfA).
+20. [Perf Theory: Approximation](https://www.youtube.com/watch?v=aVwwwK3YIaM).
