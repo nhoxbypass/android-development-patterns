@@ -218,6 +218,27 @@ There are approximations as simple as **allowing images to be slightly lower res
 For a large majority of your code, you don't need 100% exact result. By demanding less from the hardware and still giving users everytihing they need, you can potentially gain a lot of **frame rates** and device's **battery life**. 
 
 
+#### Season 4 Ep 11
+
+**Avoid doing unnecessary work**.
+
+Drawing take time, memory and battery to perform. [Overdrawn](https://developer.android.com/studio/profile/inspect-gpu-rendering.html#debug_overdraw) is where pixels are only drawn to the screen to be drawn over by some other pixels later, so all the overlaped pixels are completely wasted because user CANNOT see it. 
+
+A technique to fix this called **Culling** which is essentially means **removing the code or situations when you are wasting processing time** (in any scenario). 
+
+You should identify views that won't contribute to the final scene and avoid drawing them. You also need to avoid drawing objects that are off-screen using [ClipRect](https://developer.android.com/reference/android/graphics/Canvas.html#clipRect(float,%20float,%20float,%20float,%20android.graphics.Region.Op)).
+
+But **culling isn't just for drawing**. Let's consider searching a database for a people information, unimaginative devs might start to begin in the database and search every entry for each criteria but that can take forever! We need to order & optimize the queries to reduce the set of people that need to be searched for each successive criteria.
+
+Culling can apply everywhere, such as realtime services like location. Eg: An app alerts users based on local happening events then it doesn't make sense to check for updates to events outside the area where users live.
+
+
+#### Season 4 Ep 12
+
+For computations that are taking a long time, consider calling in reinforcements with threads to operate data in parallel and reduce the overall time required to complete the task.
+
+Because entire app run default on the main thread which used for updating the UI, so to avoid ANR you should move extra complex work off the main thread so users can continue to interact with app. You have to rethink the entire approach in oder to properly integrate threads, so to avoid the rabit hole, take advantages of the [Android framework](https://developer.android.com/guide/components/processes-and-threads.html) which has been built to help you out.
+
 
 **References:**
 1. [Threading Performance 101](https://www.youtube.com/watch?v=qk5F6Bxqhr4).
@@ -240,3 +261,5 @@ For a large majority of your code, you don't need 100% exact result. By demandin
 18. [Removing unused resources](https://www.youtube.com/watch?v=HxeW6DHEDQU)
 19. [Perf Theory: Caching](https://www.youtube.com/watch?v=JkwrNmCwFfA).
 20. [Perf Theory: Approximation](https://www.youtube.com/watch?v=aVwwwK3YIaM).
+21. [Perf Theory: Culling](https://www.youtube.com/watch?v=KFklLqiEG6w).
+22. [Perf Theory: Threading](https://www.youtube.com/watch?v=sId51btzn_A).
