@@ -235,9 +235,35 @@ Culling can apply everywhere, such as realtime services like location. Eg: An ap
 
 #### Season 4 Ep 12
 
-For computations that are taking a long time, consider calling in reinforcements with threads to operate data in parallel and reduce the overall time required to complete the task.
+For computations that are taking a long time, consider **calling in reinforcements with threads to operate data in parallel** and reduce the overall time required to complete the task.
 
 Because entire app run default on the main thread which used for updating the UI, so to avoid ANR you should move extra complex work off the main thread so users can continue to interact with app. You have to rethink the entire approach in oder to properly integrate threads, so to avoid the rabit hole, take advantages of the [Android framework](https://developer.android.com/guide/components/processes-and-threads.html) which has been built to help you out.
+
+
+#### Season 4 Ep 13
+
+Almost **everything in computing will cause performance overhead**. This could be something big (Eg: decompressing images which required a lot of memory allocations to store intermediate data,..) or can be something small (Eg: extra memory copies inside loop or recursive,..).
+
+These performance taxes aren't much of a concern, BUT when it executed MULTIPLE time it will become a big memory and cause a serious performance problem. So we will use `batching` to handle these cases.
+
+Batching is a process of **grouping identical** instances of a task together to let the overhead **happen once**, **not once for each** instance or simply **avoid nesting computation tasks**. Eg: If need to render the same image 20 times (inside a loop or `onDraw()`,..), try loading it once and save in a variable before begin (outside the loop, `onDraw()`), instead of loading it every render time. 
+
+For Android, the most important places you can apply batching is with [networking requests](https://www.youtube.com/watch?v=Ecz5WDZoJok). There is an overhead cost after each network call to "keep alive" (see SS4 Ep02 above). So instead of sending request after n seconds, you should group them together, turn the network on and send all those requests at the same time!
+
+Batching also help when rendering custom views. Rather than computing a transformation matrix for every single item, you should group and just make a small change to this larger transform matrix.
+
+Batching is so important that all modern processors now come equipped with mathematical batching support. 
+
+
+#### Season 4 Ep 14: 
+
+**Serialization is a process of taking some in-memory objects and convert it to a formatted chunk of data and they can be converted back to in-memory objects later**. Serialization is everywhere: sending package between servers and devices, sending data between processes, store preferences to disk. 
+
+You could implements `Serializable` to apply it but in term of **performance it's the worst solution**. So use [Gson](https://github.com/google/gson) which produces much faster serialization and much more memory-efficient results, but it require the formatted data to be JSON and JSON is bloated format (jammed too much extra data cause slower decode, see SS4Ep5, note that Android layout/drawable,.. XML file don't have this problem because it compiled at build time). 
+
+For starters, the [google/protobuf](https://github.com/google/protobuf) library get a lot of recognition for being very compact, flexible format for serialization but the Java implement of this lib has memory & code size overhead. This is why the nano-proto-buffers (protobuf but optimize for Android) was made. If you want to focus on performance (like games) use [google/flatbuffers](https://github.com/google/flatbuffers) library, it will produce smaller files and minimize encoding/decoding time compare to protobuf. 
+
+The most performant way is **don't serialize**. Eg: Use [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences.html) API instead of serialize preferences then save to disk. Or use `Parcelable` instead of `Serializable` when passing data between activities/processes which give a slightly serialized format but win a **huge performance boost**. Or if you you got a lot of data, don't serialize it instead create a local database using `SQLite`. 
 
 
 **References:**
@@ -263,3 +289,5 @@ Because entire app run default on the main thread which used for updating the UI
 20. [Perf Theory: Approximation](https://www.youtube.com/watch?v=aVwwwK3YIaM).
 21. [Perf Theory: Culling](https://www.youtube.com/watch?v=KFklLqiEG6w).
 22. [Perf Theory: Threading](https://www.youtube.com/watch?v=sId51btzn_A).
+23. [Perf Theory: Batching](https://www.youtube.com/watch?v=PEgkXFPcDTE).
+24. [Serialization performance](https://www.youtube.com/watch?v=IwxIIUypnTE).
