@@ -1,9 +1,6 @@
 # Android Performance Notes
 
-## Threading Performance 101
-
-
-#### Season 5 Ep 01
+### Season 5 Ep 01: Threading Performance 101
 
 Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`. If your LameWork is longer, it will cause **dropped frame**. So you must get all of your heavy workload **off** UI (main) thread and communicate back when all of the work are done. Android provide many ways to do so:
 
@@ -15,7 +12,7 @@ Android redraw the screen every `16.67 ms` to keep the app smoothly at `60 FPS`.
 Another thing need to care is memory. Threading and memory never really played well together. It can cause **memory leaks** (using inner class `AsyncTask` then activity get destroyed but `AsyncTask`s & threads are still running and have have reference to this activity,..)
 
 
-#### Season 5 Ep 02
+### Season 5 Ep 02: Understanding Android Threading
 
 * Since thread will **die** when run out of work, so you need to ALWAYS have some sort of **loop running** on the thread.
   
@@ -31,7 +28,7 @@ And the combination of all these things together is a `HandlerThread`.
 When an app run, the system create for it a process which contain a thread of execution called main thread or UI thread, which is just a `HandlerThread`.
 
 
-#### Season 5 Ep 03
+### Season 5 Ep 03: Memory & Threading
 
 * View can be reference from worker thread to update UI after execute jobs, but this view can be **removed** from the view hierachy **before the jobs done**.
 
@@ -42,7 +39,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Should NOT hold references to any type of UI objects in any of threading scenarios. But how? Use a unique **update function** to update new information for the views **or drop** the work if the view is NOT there anymore.
 
 
-#### Season 5 Ep 04
+### Season 5 Ep 04: Good AsyncTask Hunting
 
 * All `AsyncTask` created will **share the same thread** and thus will [execute in a serial fashion](https://stackoverflow.com/questions/18661288/android-two-asynctasks-serially-or-parallel-execution-the-second-is-freezing) from a **single message queue**. So if the `AsyncTask` take too long to complete it will **freeze the thread** from doing future work (Unless you use `Executor` with thread pool).
   Eg: If you kick off 20 work orders and the 3rd take an hour -> the other 17 will be blocked and wait!
@@ -52,7 +49,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Non-static nested or **inner class** will create an **implicit references** to the outer enclosing class. So Activity and entire view hierachy that use inner `AsyncTask` (most famous, well-known case) will be **leaked** if it get **destroyed before the AsyncTask work completed**, GC will mark reachable and will NOT swipe the destroyed Activity instance because there is still an implicit reference from `AsyncTask` to it, and `AsyncTask` is **still running**.
 
 
-#### Season 5 Ep 05
+### Season 5 Ep 05: Getting a HandlerThread
 
 * By default, `AsyncTask` execute serially on another thread (already note above), which mean that dealing with an 8Mpxs block of data might stall other `AsyncTask`'s packages that UI thread are waiting for. And this is exactly what `HandlerThread` is for, it effectively a long-running thread that grabs work from a message queue and operates on it, usually when need update multiple UI elements or have repeating tasks.
   Eg: Delegate Camera.open() to HandlerThread, so the preview frames callback will land on the HandlerThread rather than blocking UI or AsyncTask thread.
@@ -62,14 +59,14 @@ When an app run, the system create for it a process which contain a thread of ex
 * Note that `HandlerThread`s run outside of your activity’s lifecycle, so they need to be cleaned up properly or else you will have thread leaks.
 
 
-#### Season 5 Ep 06
+### Season 5 Ep 06: Swimming in Threadpools
 
 * `ThreadPoolExecutor` let you do more customization when using thread to make use of the number of processor available in the devices. It help you spin up a number of threads and toss blocks of work to execute on it, handle all heavy lifting of spinning up the threads, load balancing work across those threads, even killing those threads when they've been idle for a while.
 
 * When creating thread pool, we can specify the number of initial threads and the number of maximum threads as the workload in the thread pool changes it will **scale** the number of alive thread to match.
 
 
-#### Season 5 Ep 07
+### Season 5 Ep 07: The Zen of IntentService
 
 [IntentService](https://developer.android.com/reference/android/app/IntentService.html) helps get intents work off the UI thread.
 
@@ -82,7 +79,7 @@ When an app run, the system create for it a process which contain a thread of ex
 * Use `IntentService` put app into middle of two states "HAS foreground activity" and "NO foreground activity". Help app a little less likely to be killed by the system than just use only `Thread`.
 
 
-#### Season 5 Ep 08
+### Season 5 Ep 08: Threading and Loaders
 
 What do we do with the threaded work when the activity that kicked it off is no longer alive? 
 
@@ -99,7 +96,7 @@ Use [Loaders](https://developer.android.com/guide/components/loaders.html)!
 * When an activity with an active loader is popped out of the stack and never return, the `LoaderManager` made a callback saying the result will never be used. Use this callback to abort the work, clean up, and move on without waste anymore resources.
 
 
-#### Season 5 Ep 09
+### Season 5 Ep 09: The Importance of Thread Priority
 
 Spawn too many threads into not enough CPUs is an old problem, thread scheduling has solved this by using various metrics to determine which thread gets the next slice of CPU time. Every thread is assigned a priority, the scheduler will **prefer more** to thread that are more important but **still ballance** with the need to eventually get all it's work done.
 
@@ -108,12 +105,12 @@ Priorities are assigned in a couple of ways.
 * When a thread is created by default it's given the **same priority and group memberships** as the "spawner" thread. So if UI thread spawn 20 other worker thread, they will all compete equally for CPU time allocation. -> Explicitly set the priority for any thread that you created in your application.
 
 
-#### Season 5 Ep 10
+### Season 5 Ep 10: Profile GPU Rendering : M Update
 
 See the reference video.
 
 
-#### Season 4 Ep 1
+### Season 4 Ep 1: #Cachematters for networking
 
 With pieces of data that will be used multiple times, fetch it from the network and cache on the device. But by default, HTTP Caching is disabled for Android apps.
 
@@ -124,7 +121,7 @@ With HTTP response cache, data is evicted from the device in `2` ways: First, if
 The drawbacks is: API server can decide to cache or not, cache values can conflict with physical resources on device,.. -> Write your **own Disk Cache management** (clone and modify the `DiskLRUCache`) or creating your **own caching logic** based on the type of the data and state of device.
 
 
-#### Season 4 Ep 2
+### Season 4 Ep 2: Optimizing Network Request Frequencies
 
 **Do not over sync** data thru network. Because networking is the single biggest battery hog. It's not only drain battery to initialize the chip but then it keep awake for an additional `20-60` seconds after request completed.
 
@@ -135,7 +132,7 @@ Or when in cases that you have to sync in an specific time interval, if no new d
 Use [GCMNetworkManager](https://developers.google.com/android/reference/com/google/android/gms/gcm/GcmNetworkManager) to schedule network tasks and handle batching.
 
 
-#### Season 4 Ep 3
+### Season 4 Ep 3: Effective Prefetching
 
 **Prefetching** is about predicting what data would be in future request and grabbing all data now while there is an active radio connection.
 
@@ -146,7 +143,7 @@ But prefetching is a tricky balancing problem. Prefetch too little and you'll en
 On 3G a quality prefetch is about `1-5Mb` of data that user might need in the next `1-2` minutes of their active session. Modifying prefetch code to adjust/optimize **based on the quality of the user's connection** (the easiest way to determine the health of the network is simply how long it takes for some well-known pieces of content).
 
 
-#### Season 4 Ep 4
+### Season 4 Ep 4: Adapting to Latency
 
 To adapting to latency means adjust how apps work based on the connectivity of the device.
 
@@ -156,7 +153,7 @@ To adapting to latency means adjust how apps work based on the connectivity of t
 Use [Emulator throttling](https://developer.android.com/studio/run/emulator.html#netspeed) to throttling the bandwidth or use [AT&T Network Attenuator](https://developer.att.com/blog/at-amp-t-network-attenuator) to test how your app respond when latency go sky high.
 
 
-#### Season 4 Ep 5
+### Season 4 Ep 5: Minimizing Asset Payload
 
 Big asset files drain more battery & cost user money. So we need to **minimize the assets payload**. And there is two biggest candidates: Images and serialized data.
 
@@ -164,7 +161,7 @@ Big asset files drain more battery & cost user money. So we need to **minimize t
 2. Serialized formats data (JSON, XML,..) jammed too much un-needed data to make them more readable by human, instead leveraging binary serialization formats as [proto buffs](https://developers.google.com/protocol-buffers/), [flat buffers](https://google.github.io/flatbuffers/) are all accessible on Android that can reduce data foodprint significantly. Any of data you serialize is going to be [GZIP compressed by HTTP stack](https://en.wikipedia.org/wiki/HTTP_compression) so you should adopting a [Struct-of-Arrays](https://www.youtube.com/watch?v=qBxeHkvJoOQ) format to help bundle similar typed fields together so the LZ stage of the GZIP compressor can do a better job finding symbol matches.
 
 
-#### Season 4 Ep 6
+### Season 4 Ep 6: Service Performance Patterns
 
 Service aren't free (cost time & memory), service also run on UI thread so it can cause dropping frame. So **don't use Services of you don't have to!**
 
@@ -173,7 +170,7 @@ If you must use Serivce, follow the one primary rule: **do not let services live
 Mixing these 2 types of service is useful but it's easy to cause error. Eg: create service using `startService()` then call `bindService()` for IPC communication, the problem is even client called `unbindService()` it will NOT terminate yet because it's waiting around for a `stopService()` to be called.
 
 
-#### Season 4 Ep 7
+### Season 4 Ep 7: Removing unused code
 
 3rd party libraries help you with the heavy lifting, this is totally fine because many of these libs are heavily tested and have proven the stress of production, the problem is you may **have to import the entire lib when you're just use a subset**. The extra code is called code bloat and turned into overhead that get shipped with your APK. 
 
@@ -186,7 +183,7 @@ Fortunately there is a tool in the Android tool chain that great for hunting dow
 Proguard is NOT so great sorting out other situations like code that uses reflection or code that get called from native code. This may end up giving some false positive when some code is removed and some is not (you can get `NoClassDefFoundError` or `MethodNotFoundException`,..). So you need to adjust Proguard settings based on what lib you are including.
 
 
-#### Season 4 Ep 8
+### Season 4 Ep 8: Removing unused resources
 
 Just because you're being frugal your resources doesn't mean that the libs you are included will do the same, and stuff like this that leads to bloated APKs.
 
@@ -195,7 +192,7 @@ Gradle toolchain can **statically analyze** all of your code to find the assets 
 There is might be some false positives or false negatives when found some of your assets are getting cut when you want them kept and some of them kept but you want them cut. We can fix this will the `tools:keep` and `tools:discard` attributes to setup desired behavior. And note that Gradle will **ignore resources inside resolutions or multiple language folders** (drawable-hdpi, drawable-xhdpi, values-es, values-fr,..) because these can be needed at **runtime** and the compiler can't really know what user is going to need.
 
 
-#### Season 4 Ep 9
+### Season 4 Ep 9: Perf Theory: Caching
 
 Why computer have RAMs? They act as a data cache to **access recent information FAST - like SUPER fast - compared to having to get it from the hard drive or from the Internet**. This is basically what a cache is - **a place to store data that frequently used so that future uses happen as fast as possible**. Anytime that you have an overhead cost for computing, loading or finding a piece of data, a cache can help you do it faster and more effectively.
 
@@ -206,7 +203,7 @@ Cache helps manage resources for our limited resource environments. See [The Mag
 Caching by pre-computing. Which spend time **offline ahead-of-time to calculate** a huge look up table or massive XML schema, so at runtime you can **simply fetch** that data rather than executing all that expensive overhead and let users wait.
 
 
-#### Season 4 Ep 10
+### Season 4 Ep 10: Perf Theory: Approximation
 
 Approximation is all about c**utting corners and making things good enough for both users and developers**. **Do less, when you can**: Using less time, calculating a less precise result that still meets the user's current need. 
 
@@ -218,7 +215,7 @@ There are approximations as simple as **allowing images to be slightly lower res
 For a large majority of your code, you don't need 100% exact result. By demanding less from the hardware and still giving users everytihing they need, you can potentially gain a lot of **frame rates** and device's **battery life**. 
 
 
-#### Season 4 Ep 11
+### Season 4 Ep 11: Perf Theory: Culling
 
 **Avoid doing unnecessary work**.
 
@@ -233,14 +230,14 @@ But **culling isn't just for drawing**. Let's consider searching a database for 
 Culling can apply everywhere, such as realtime services like location. Eg: An app alerts users based on local happening events then it doesn't make sense to check for updates to events outside the area where users live.
 
 
-#### Season 4 Ep 12
+### Season 4 Ep 12: Perf Theory: Threading
 
 For computations that are taking a long time, consider **calling in reinforcements with threads to operate data in parallel** and reduce the overall time required to complete the task.
 
 Because entire app run default on the main thread which used for updating the UI, so to avoid ANR you should move extra complex work off the main thread so users can continue to interact with app. You have to rethink the entire approach in oder to properly integrate threads, so to avoid the rabit hole, take advantages of the [Android framework](https://developer.android.com/guide/components/processes-and-threads.html) which has been built to help you out.
 
 
-#### Season 4 Ep 13
+#### Season 4 Ep 13: Perf Theory: Batching
 
 Almost **everything in computing will cause performance overhead**. This could be something big (Eg: decompressing images which required a lot of memory allocations to store intermediate data,..) or can be something small (Eg: extra memory copies inside loop or recursive,..).
 
@@ -255,7 +252,7 @@ Batching also help when rendering custom views. Rather than computing a transfor
 Batching is so important that all modern processors now come equipped with mathematical batching support. 
 
 
-#### Season 4 Ep 14: 
+### Season 4 Ep 14: Serialization performance
 
 **Serialization is a process of taking some in-memory objects and convert it to a formatted chunk of data and they can be converted back to in-memory objects later**. Serialization is everywhere: sending package between servers and devices, sending data between processes, store preferences to disk. 
 
@@ -266,28 +263,19 @@ For starters, the [google/protobuf](https://github.com/google/protobuf) library 
 The most performant way is **don't serialize**. Eg: Use [SharedPreferences](https://developer.android.com/reference/android/content/SharedPreferences.html) API instead of serialize preferences then save to disk. Or use `Parcelable` instead of `Serializable` when passing data between activities/processes which give a slightly serialized format but win a **huge performance boost**. Or if you you got a lot of data, don't serialize it instead create a local database using `SQLite`. 
 
 
-**References:**
-1. [Threading Performance 101](https://www.youtube.com/watch?v=qk5F6Bxqhr4).
-2. [Understanding Android Threading](https://www.youtube.com/watch?v=0Z5MZ0jL2BM)
-3. [Memory & Threading](https://www.youtube.com/watch?v=tBHPmQQNiS8)
-4. [Good AsyncTask Hunting](https://www.youtube.com/watch?v=jtlRNNhane0)
-5. [Getting a HandlerThread](https://www.youtube.com/watch?v=adPLIAnx9og)
-6. [Swimming in Threadpools](https://www.youtube.com/watch?v=uCmHoEY1iTM)
-7. [The Zen of IntentService](https://www.youtube.com/watch?v=9FweabuBi1U)
-8. [Threading and Loaders](https://www.youtube.com/watch?v=s4eAtMHU5gI)
-9. [The Importance of Thread Priority](https://www.youtube.com/watch?v=NwFXVsM15Co)
-10. [Profile GPU Rendering : M Update](https://www.youtube.com/watch?v=erGJw8WDV74)
-11. [#Cachematters for networking](https://www.youtube.com/watch?v=7lxVqqWwTb0)
-12. [Optimizing Network Request Frequencies](https://www.youtube.com/watch?v=nDHeuEM30ks)
-13. [Effective Prefetching](https://www.youtube.com/watch?v=GajI0uKyAGE)
-14. [Adapting to Latency](https://www.youtube.com/watch?v=uzboHWX3Kvc)
-15. [Minimizing Asset Payload](https://www.youtube.com/watch?v=ts5o6t7enOk)
-16. [Service Performance Patterns](https://www.youtube.com/watch?v=NJsq0TU0qeg)
-17. [Removing unused code](https://www.youtube.com/watch?v=5frxLkO4oTM)
-18. [Removing unused resources](https://www.youtube.com/watch?v=HxeW6DHEDQU)
-19. [Perf Theory: Caching](https://www.youtube.com/watch?v=JkwrNmCwFfA).
-20. [Perf Theory: Approximation](https://www.youtube.com/watch?v=aVwwwK3YIaM).
-21. [Perf Theory: Culling](https://www.youtube.com/watch?v=KFklLqiEG6w).
-22. [Perf Theory: Threading](https://www.youtube.com/watch?v=sId51btzn_A).
-23. [Perf Theory: Batching](https://www.youtube.com/watch?v=PEgkXFPcDTE).
-24. [Serialization performance](https://www.youtube.com/watch?v=IwxIIUypnTE).
+### Season 04 Ep 15: Smaller Serialized Data
+
+In most of the serialized form of data **property name duplicate** often and that will cause larger files. GZIP is NOT enough because it compresses data by **finding duplicate strings** in your file as long as they are within a window of 32K characters, so the larger your serialized classes are, the **longer distance between 2 duplicate** data will be. So cause less duplicate data which resulting in **less compression savings**.
+
+Using the Arrays-of-Struct create larger serialized class & less compression savings, to solve this we use **Struct-of-Arrays** form. Struct-of-Arrays is take all of **one property from every element & list them together in an array of their type** and then do this for each property in the class. 
+
+You can get even better compression & better serialization by **adopting binary serialization formats** (protobuffs, nanobuffs or FlatBuffer,..).
+
+
+### Season 04 Ep 16: Caching UI data
+
+At some point in the past, you've actually grabbed a valid block of UI information (except first load), although the data is outdated your app still CAN **use that cached information when the fresh data hasn't been fetched yet**. 
+
+Upon a successful fetch of some UI data, **serialize it to persistence storage** (or memory for quick load but will be erase when app's process stop) along with timestamp to know how old the information is. When do a [cold start](https://developer.android.com/topic/performance/launch-time.html#cold) you can use this data to **start drawing UI immediately while also kicking off network request to fetch the freshest data**. But you need to notify user for this. 
+
+There are right and wrong ways to do caching data. Firstly you should use binary serialization format to have smaller file & better performance than human readable formats like JSON or XML. And if UI is depent on a lot of complicated queries accross this data serialzation may NOT be the best idea compare to storing in SQLite.
