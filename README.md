@@ -5,6 +5,7 @@ Notes, logs and code about Android Development Patterns especially Performance P
 ## Contents
 * [Android Development Note](note.md)
 * [Android Development Patterns](development_patterns.md)
+* [Android Performance Note](performance_note.md)
 * [Android Performance Patterns](performance_patterns.md)
 * [Android Kotlin notes](kotlin_note.md)
 * [Resources](resources.md)
