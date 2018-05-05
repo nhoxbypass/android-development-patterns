@@ -1,4 +1,4 @@
-# Android development note
+# Android Development Notes
 
 
 ## Bitmap

@@ -1,4 +1,4 @@
-# Android Performance Notes
+# Android Performance Patterns
 
 ### Season 5 Ep 01: Threading Performance 101
 
