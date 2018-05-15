@@ -279,3 +279,23 @@ At some point in the past, you've actually grabbed a valid block of UI informati
 Upon a successful fetch of some UI data, **serialize it to persistence storage** (or memory for quick load but will be erase when app's process stop) along with timestamp to know how old the information is. When do a [cold start](https://developer.android.com/topic/performance/launch-time.html#cold) you can use this data to **start drawing UI immediately while also kicking off network request to fetch the freshest data**. But you need to notify user for this. 
 
 There are right and wrong ways to do caching data. Firstly you should use binary serialization format to have smaller file & better performance than human readable formats like JSON or XML. And if UI is depent on a lot of complicated queries accross this data serialzation may NOT be the best idea compare to storing in SQLite.
+
+
+### Season 04 Ep 17: CPU Frequency Scaling
+
+In order to **conserve battery** Android devices can **reduce the ammount of voltage (V) supplied to the CPU**, this mean the processors will consume less energy to execute code but **slowing down** the process and your code will take longer to run. 
+
+Android devices are **always** trying to throttle voltage that supplied to the CPU to save energy by letting "the interactive gorvernor" **constantly** check CPU workload to determine throttle (when low CPU load) or ramp up (when high CPU load). When the frequency get throttled normal operation takes longer to execute so don't be surprise if suddenly your frame time shoot above `16 ms`.
+
+Change in frequency take about `20 ms` to occur, meaning that if you come right out of the low-frequency state the first next frame may render slower. 
+
+
+### Season 03 Ep 01: Fun with ArrayMaps
+
+Consider the commonly used HashMap that **totally useful but also complete memory hog**. When putting item, HashMap do "hash-to-index" to convert "key obj" to array index that store "value obj", but the problem is collisions or when multiple key hash to same index location. Small array means more collisions, so most HashMap end up **allocating a large array & adding more crazy logic (chainning,..) to avoid collisions**. And because of that, it is NOT really ideal for low-mem devices.
+
+That's why Android provide `ArrayMap`. ArrayMap **provide functionalities as a HashMap but avoid all crazy overhead by using two array instead of one large one**. The first array contain hashes of the keys in sorted order, the second array store keys/values interwoven to each other & with the order of the sorted keys array. When need to fetch a value, it create hash of the key and then binary search hash array to find the index, then use this index directly to find the location of key/value pair in the interwoven array. 
+
+When HashMap empty the array is still be allocated, but when ArrayMap is empty nothing allocated.
+
+But obviously it's NOT wise to use in every case. But there are some perfect situations like: When you have a small number of items (< 1000) with lots of acesses OR when the frequency of insertion/deletion is low (because ArrayMap cause overhead in these cases) OR when you have containers of maps (such as maps of maps,..) you should change to ArrayMap. Unless you can **stick with the HashMap to avoid some overhead**.
