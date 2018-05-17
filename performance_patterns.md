@@ -308,3 +308,12 @@ Java provide "object version" of primitive type  (like java.lang.Integer,..) whi
 Autoboxing convert from primitive types to object but it comes with some performance penalties. Ex: When add a primitive int to an Integer object, the runtime has to create a new Integer object, push the value into it then add back to other Integer object. Which means **everytime you do autoboxing conversion a new object allocation comes along with it**. 
 
 This is really painful since these object are **larger in size** than primitive (16 bytes for Integer rather than 4 bytes for primitive int) and also required more performance overhead in order to access the underlying value. 
+
+
+### Season 03 Ep 03: SparseArray Family Ties
+
+You can avoid one of the largest cause of autoboxing issues: HashMap containers. HashMap has to use the generic object version which eat up memory. And **anytime you fetch an primitive from a generic container, autoboxing happen**. 
+
+Android provide a whole SparseArray family of generic containers built specific to **provide functionalities of the HashMap but allow use primitive types & avoid autoboxing**. SparseArray basically like a ArrayMaps, they reduce overall memory by using 2 tightly packed arrays rather than 1 large array but come with some overhead when fetching object. So only useful for containers with hundreds (< 1000) of objects rather than thousands or milions or when we have a container of container (maps contain maps,..). 
+
+The main diff between SparseArray & ArrayMap that the keys array always contain primitive type rather than generic object type allow saving memory & avoid autoboxing. 
