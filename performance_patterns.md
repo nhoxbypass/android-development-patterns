@@ -299,3 +299,12 @@ That's why Android provide `ArrayMap`. ArrayMap **provide functionalities as a H
 When HashMap empty the array is still be allocated, but when ArrayMap is empty nothing allocated.
 
 But obviously it's NOT wise to use in every case. But there are some perfect situations like: When you have a small number of items (< 1000) with lots of acesses OR when the frequency of insertion/deletion is low (because ArrayMap cause overhead in these cases) OR when you have containers of maps (such as maps of maps,..) you should change to ArrayMap. Unless you can **stick with the HashMap to avoid some overhead**.
+
+
+### Season 03 Ep 02: Beware Autoboxing
+
+Java provide "object version" of primitive type  (like java.lang.Integer,..) which give you the same functionalities but can be used with generic collections and this is where autoboxing come in.
+
+Autoboxing convert from primitive types to object but it comes with some performance penalties. Ex: When add a primitive int to an Integer object, the runtime has to create a new Integer object, push the value into it then add back to other Integer object. Which means **everytime you do autoboxing conversion a new object allocation comes along with it**. 
+
+This is really painful since these object are **larger in size** than primitive (16 bytes for Integer rather than 4 bytes for primitive int) and also required more performance overhead in order to access the underlying value. 
