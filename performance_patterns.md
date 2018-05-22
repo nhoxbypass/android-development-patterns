@@ -317,3 +317,27 @@ You can avoid one of the largest cause of autoboxing issues: HashMap containers.
 Android provide a whole SparseArray family of generic containers built specific to **provide functionalities of the HashMap but allow use primitive types & avoid autoboxing**. SparseArray basically like a ArrayMaps, they reduce overall memory by using 2 tightly packed arrays rather than 1 large array but come with some overhead when fetching object. So only useful for containers with hundreds (< 1000) of objects rather than thousands or milions or when we have a container of container (maps contain maps,..). 
 
 The main diff between SparseArray & ArrayMap that the keys array always contain primitive type rather than generic object type allow saving memory & avoid autoboxing. 
+
+
+### Season 03 Ep 04: The price of ENUMs
+
+When your app loaded, Android provide a section of system memory as heap space then DEX code load into that space. When memory gets low, your app will be terminated to free up space. 
+
+Adding enum - which take **extra memory than int constants** - will bloat your DEX file which eats away your heap space.
+
+If enums are widely used across your app, all those small pieces of overhead quickly add up to a substantial amount, you don't really know that enum are causing a problem until they're already infecting your codebase. And at that point, try to fix it is a horrible process.
+
+If you're using int constants instead of enums you can add `@IntDef` annotation. If your code already using many enums, ProGuard can (in many situations) optimize enums to int constants. 
+
+
+### Season 03 Ep 05: Trimming and Sharing Memory
+
+Each running app taking a small piece of device limited resources to store state information, graphics resources, allocated heap objects,.. that **stick around in memory even when app is in background**. Overtime device will run out of memory & kill existing app to claim memory back. 
+
+We DO keep background app in memory **for fast switching between background/foreground app**. But when your app get killed, and user navigate back to it, it starts slowly from scratch. 
+
+Your app **does NOT have to be killed**. Instead when memory is low your app can **offer some of its allocated space back to the system in order to avoid being terminated**. 
+
+To do this, when memory is low, the active app will get `onLowMemory()` callback to release resources to help stablize the system, but this callback only get called AFTER all other background apps have been killed. That is why `onTrimMemory()` callback born to allow active apps save background apps from being killed. This callback issued to all running apps, tell them to release memory rather than being killed and can be overriden on application, activity, fragment, service,..
+
+But in order to produce the best UX, should NOT just be reactive to memory situation (in callbacks) but also proactive check if your app are running on a low memory device using `ActivityManager.isLowRamDevice()`
