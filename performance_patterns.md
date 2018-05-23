@@ -355,3 +355,12 @@ How to fix it:
 * Don't reference Views inside of async callbacks. Because the activity may be **killed before** the callback triggered so the Views & activity may be leaked and keep around in memory (for non-static callbacks). And worst situation your callback may be triggered after the View objects actually destroyed that will cause `IllegalStateException` & crash app.
 * Don't reference Views from static object. Because the static object can persist for a lifetime of the entire process of your app but the lifetime of your activity is shorter. Ex: having a static object reference to View & the View still reference to the Activity so when rotate the device, the acitvity and entire view tree are remain in the memory. 
 * Don't put View in collection that don't have clear memory patterns. Ex: `WeakHashmap` store Views as hard reference so can end up a bad spot anytime something destroy those views. 
+
+
+### Season 03 Ep 06: Location & Battery Drain
+
+Location interval is the milis which your app prefer to receive a location update, the lower interval the more updates you get, but the more battery you burn. If you notice the **position has stayed the same for a while** so user may be stationary for a long duration. So try to increase interval to reduce battery churn. 
+
+There are many ways to get location updates: GPS Provider - using satelite - more accurate but very battery intensive operation, Cell Network Provider - using nearby cell tower & Wifi access point - less accurate result but save battery. 
+
+Using the `FusedLocationProvider` you can simplify the operation, Android will handle & **ballance between battery & location accuracy** for you. 
