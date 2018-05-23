@@ -357,7 +357,7 @@ How to fix it:
 * Don't put View in collection that don't have clear memory patterns. Ex: `WeakHashmap` store Views as hard reference so can end up a bad spot anytime something destroy those views. 
 
 
-### Season 03 Ep 06: Location & Battery Drain
+### Season 03 Ep 07: Location & Battery Drain
 
 Location interval is the milis which your app prefer to receive a location update, the lower interval the more updates you get, but the more battery you burn. If you notice the **position has stayed the same for a while** so user may be stationary for a long duration. So try to increase interval to reduce battery churn. 
 
