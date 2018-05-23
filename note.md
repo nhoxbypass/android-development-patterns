@@ -154,7 +154,7 @@ GC also have many disadvantages such as consuming additional resources, performa
 #### Unregister listener
 
 Without calling the unregister method, the instance will probably **keep a reference** around long after the referenced object has been terminated and will thus start leaking memory. But it [depends](https://stackoverflow.com/a/5010949/5282585) on what those listeners are registered upon.
-Eg: a well-written `OnClickListener` for a button should not result in a memory leak. However, a `LocationListener`, registered with the `LocationManager` system service, is held by the process. Hence, even if the activity is destroyed, the listener will remain registered. If that listener is an inner class, it will continue to hold an implicit reference to the activity, and you will have a memory leak.
+Eg: a simple well-written `OnClickListener` for a button should not result in a memory leak. However, a `LocationListener`, registered with the `LocationManager` - which is a **system service** - is held by the process. Hence, even if the activity is destroyed, the **listener will remain registered**. If that listener is an **inner class**, it will continue to hold an implicit reference to the activity, and you will have a memory leak.
 
 #### Non-static nested class (inner class)
 
