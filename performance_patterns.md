@@ -341,3 +341,17 @@ Your app **does NOT have to be killed**. Instead when memory is low your app can
 To do this, when memory is low, the active app will get `onLowMemory()` callback to release resources to help stablize the system, but this callback only get called AFTER all other background apps have been killed. That is why `onTrimMemory()` callback born to allow active apps save background apps from being killed. This callback issued to all running apps, tell them to release memory rather than being killed and can be overriden on application, activity, fragment, service,..
 
 But in order to produce the best UX, should NOT just be reactive to memory situation (in callbacks) but also proactive check if your app are running on a low memory device using `ActivityManager.isLowRamDevice()`
+
+
+### Season 03 Ep 06: DO NOT LEAK VIEWS
+
+The worst thing that you can leak in Android app is Views object. 
+
+By themselves view aren't much of a leak problem but what they reference can cause a horrible situation. GC can only reclaim objects that are no longer referenced by anything else. A leak is a object that is no longer needed (unused) but there's still a reference to it somewhere in the system. And this problem can **cascade**.
+
+So here's the problem, **View contain a ref back to the Activity that created them**, and the Activity reference to lots of internal objects (fields, variables,..) and other memory items. This is why a leaked view can cause a big issue. Ex: When user rotate device a configuration changed is triggered causing current activity destroyed & recreate new instance of this activity. But if a View from that 1st activity leaked then the original activity can NOT be cleaned up but sit around in the memory. 
+
+How to fix it: 
+* Don't reference Views inside of async callbacks. Because the activity may be **killed before** the callback triggered so the Views & activity may be leaked and keep around in memory (for non-static callbacks). And worst situation your callback may be triggered after the View objects actually destroyed that will cause `IllegalStateException` & crash app.
+* Don't reference Views from static object. Because the static object can persist for a lifetime of the entire process of your app but the lifetime of your activity is shorter. Ex: having a static object reference to View & the View still reference to the Activity so when rotate the device, the acitvity and entire view tree are remain in the memory. 
+* Don't put View in collection that don't have clear memory patterns. Ex: `WeakHashmap` store Views as hard reference so can end up a bad spot anytime something destroy those views. 
