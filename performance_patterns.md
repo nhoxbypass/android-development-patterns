@@ -364,3 +364,12 @@ Location interval is the milis which your app prefer to receive a location updat
 There are many ways to get location updates: GPS Provider - using satelite - more accurate but very battery intensive operation, Cell Network Provider - using nearby cell tower & Wifi access point - less accurate result but save battery. 
 
 Using the `FusedLocationProvider` you can simplify the operation, Android will handle & **ballance between battery & location accuracy** for you. 
+
+
+### Season 03 Ep 08: Double Layout Taxation
+
+Anytime the position or size of Views changed will affect other neighbor views in the hierachy. **When views changed, layout phases of the rendering pipeline will occur to re-calculate position & size for all views impacted by the change**. In general it's a reasonably fast process but may cause an expensive cascade of layout operations which can increase your frame time.
+
+Ex: RelativeLayout allow to define the position of a view with respect to parent or position of some other views. The issue here is in order to properly position views in relation to another, container must kick of a second layout pass before finalize position & begin render. (The first pass will visit each view & calculate position & size base upon it's own request. Then the RelativeLayout use this data to figure out proper positions of correlated views & make boundary adjustment. Then a second layout pass will kicked off, recalculate to determine the final position to use for rendering). But it's not the only layout that can cause double layout pass, the LinearLayout with `measureWithLargestChild`, or nested LinearLayout.
+
+The big problem is when it cascaded: A RelativeLayout (2x pass) which contain a ListView (2x pass) which every list item is a GridView (2x pass) will cause child views to have 8 times re-layouts for each change.
