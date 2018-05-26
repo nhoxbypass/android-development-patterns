@@ -386,3 +386,10 @@ So:
 With the stuff that user ask to do (pull to refresh, update now,..) we cannot do anything. But with the stuff that servers need to update for you (notify new emails,..) and the stuff that need to be upload frequently (upload analytics, check device location,..) we can do optimize.
 
 You should NEVER poll the server regularly for updates, because you could wasting bandwidth, battery waiting server for nothing changes. Instead **let the server signal the app when there's new content** (using FCM,..). If this technique cannot be use, you should reduce the frequency using **backoff pattern** that increase interval time when data not change. And rather that letting your request be strung out overtime, try to batch them together so they happen in a short burst to optimize active radio time. Or try **pre-fectching** your data to reduce future requests.
+
+
+### Season 03 Ep 10: Effective Network Batching
+
+After a request radio still wait for extra `20-60 secs` to **keep alive** just in case the response from server come in, if nothing comes it will go back to sleep. 
+
+Batching is about **grouping the requests together so you only have to pay the wake up & keep alive once**. Instead of execute network request immediately, store them in a pending queue to execute in the future when reaching threshold in queue size. But there is cases that network radio could be wake up by some other apps before the threshold reach. So you should implement a callback when network radio turn up to execute request queue. 
