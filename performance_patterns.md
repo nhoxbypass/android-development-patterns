@@ -373,3 +373,16 @@ Anytime the position or size of Views changed will affect other neighbor views i
 Ex: RelativeLayout allow to define the position of a view with respect to parent or position of some other views. The issue here is in order to properly position views in relation to another, container must kick of a second layout pass before finalize position & begin render. (The first pass will visit each view & calculate position & size base upon it's own request. Then the RelativeLayout use this data to figure out proper positions of correlated views & make boundary adjustment. Then a second layout pass will kicked off, recalculate to determine the final position to use for rendering). But it's not the only layout that can cause double layout pass, the LinearLayout with `measureWithLargestChild`, or nested LinearLayout.
 
 The big problem is when it cascaded: A RelativeLayout (2x pass) which contain a ListView (2x pass) which every list item is a GridView (2x pass) will cause child views to have 8 times re-layouts for each change.
+
+
+### Season 03 Ep 09: Network Performance 101
+
+Networking performance is about **reducing the amount of time between when user want data and when networking return it**. But there is also a second set of performance concern that devs should be aware of: using cell radio for networking is the number one **battery killer** & the more data you transfering the more **money user will be charged**.
+
+So:
+* Reduce the amount of time you keep the radio active.
+* Reduce the size of data you fetching.
+
+With the stuff that user ask to do (pull to refresh, update now,..) we cannot do anything. But with the stuff that servers need to update for you (notify new emails,..) and the stuff that need to be upload frequently (upload analytics, check device location,..) we can do optimize.
+
+You should NEVER poll the server regularly for updates, because you could wasting bandwidth, battery waiting server for nothing changes. Instead **let the server signal the app when there's new content** (using FCM,..). If this technique cannot be use, you should reduce the frequency using **backoff pattern** that increase interval time when data not change. And rather that letting your request be strung out overtime, try to batch them together so they happen in a short burst to optimize active radio time. Or try **pre-fectching** your data to reduce future requests.
