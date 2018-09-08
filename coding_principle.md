@@ -39,6 +39,8 @@ Ex: class `AbstractDatePickerDelegate` have 2 child class: `DatePickerSpinnerDel
 So why these 2 class do not implement `DatePickerDelegate` interface directly? To avoid duplicate code.
 
 
+## Misc
+
 #### Nested class
 
 | Static        | Non-static (inner class)    |
