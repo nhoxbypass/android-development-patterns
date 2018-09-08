@@ -17,7 +17,10 @@ We can reduce app lauching time by: Lazy load resources. Allow app to load and d
 
 #### Layout:
 
-Optimize layout hierachy to avoid nested `LinearLayout` that use `layout_weight` or nested `RelativeLayout`. Reuse layout using `<include>` or `<merge>`. Use dynamic views with views rarely use. Use `RecyclerView` instead of the old `ListView`. Apply `ViewHolder` pattern for lists. Use `lint` tool to check layouts.
+* Optimize layout hierachy to avoid nested `LinearLayout` that use `layout_weight` or nested `RelativeLayout`. 
+* Reuse layout using `<include>` or `<merge>`. Use dynamic views with views rarely use. Use `RecyclerView` instead of the old `ListView`. 
+* Apply `ViewHolder` design pattern for lists to reuse row item view instead of create new View object. This will avoid `findViewById()` overhead. (Number of row item views = number of rows inside screen + 2 (threshold) -> recycle row item views to reuse when scroll).
+* Use `lint` tool to check layouts.
 
 #### Power usage:
 
