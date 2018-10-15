@@ -127,7 +127,7 @@ The drawbacks is: API server can decide to cache or not, cache values can confli
 
 **Avoid pull server regularly for updates** (could wasting bandwidth, battery waiting for server telling you that nothing changed). Instead use [Firebase Cloud Messaging](https://firebase.google.com/docs/cloud-messaging/) which will **let the server signal the app when there is new content**.
 
-Or when in cases that you have to sync in an specific time interval, if no new data is available **double length of the time interval** that need to wait until check again. Or adjust the time interval base on user activity or device's state (user is busy, device sleep mode, wifi connected, charge plugged in,..).
+Or when in cases that you have to sync in an specific time interval, you should reduce the frequency using **backoff pattern**, if no new data is available **double length of the time interval** that need to wait until check again. Or adjust the time interval base on user activity or device's state (user is busy, device sleep mode, wifi connected, charge plugged in,..).
 
 Use [GCMNetworkManager](https://developers.google.com/android/reference/com/google/android/gms/gcm/GcmNetworkManager) to schedule network tasks and handle batching.
 
