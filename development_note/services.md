@@ -1,4 +1,8 @@
-## Android Service
+## Android Services
+
+A service is a general-purpose entry point for keeping an app running in the background for all kinds of reasons. It is a component that runs in the background to perform long-running operations or to perform work for remote processes. 
+
+A service does not provide a UI.
 
 * Only [one instance](https://stackoverflow.com/questions/22909600/running-multiple-instance-of-a-service) of specific service is allow to run at the same time.
 * The Service and IntentService may be triggered from any thread, activity or other application component.

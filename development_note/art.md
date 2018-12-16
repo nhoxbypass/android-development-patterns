@@ -1,5 +1,9 @@
 # Android Runtime
 
+Android Runtime (ART) is the managed runtime used by applications and some system services on Android. Replacing the predecessor Dalvik, ART performs the translation of the application's bytecode into native instructions that are later executed by the device's runtime environment. 
+
+ART also executes the Dex format and Dex bytecode specification.
+
 ## Android Runtime vs Dalvik Virtual Machine
 
 | ART        | DVM          |

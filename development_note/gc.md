@@ -13,6 +13,7 @@ Every object tree **must** have one or more root objects. As long as the applica
 
 ![GC](../resources/gc_with_leaks.png "GC")
 
+
 ## Stop the world event!
 
 Simple GCs are [stop-the-world event](https://en.wikipedia.org/wiki/Tracing_garbage_collection#Stop-the-world_vs._incremental_vs._concurrent), it completely halt execution of the program to run a collection cycle, thus guaranteeing that new objects are not allocated and objects do not suddenly become unreachable while the collector is running.

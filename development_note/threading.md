@@ -1,5 +1,7 @@
 # Threading
 
+Making adept use of threads & processes on Android can help you boost your app’s performance.
+
 ## Process and Thread
 
 * All are execution environment. Process can consist of 1 or many thread(s) but a thread can only belong to 1 process.
@@ -42,6 +44,7 @@ You would use `HandlerThread` in case that you want to perform long background t
 For more information related to performance, see [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-02) and [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-05).
 
 For real life example, look at [this](https://stackoverflow.com/questions/18149964/best-use-of-handlerthread-over-other-similar-classes).
+
 
 ## Ways to get work off main thread.
 

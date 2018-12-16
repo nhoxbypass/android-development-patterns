@@ -1,5 +1,7 @@
 # Virtual Machine
 
+Virtual Machine allow Java/Kotlin programs to run on any device or operating system (known as the "Write once, run anywhere" principle), and to manage, optimize program resources & memory. 
+
 ## Why Android use virtual machine
 
 * Code **isolate** from the core OS -> code contain malicious won't affect system directly. Make app and system stable and reliable.
