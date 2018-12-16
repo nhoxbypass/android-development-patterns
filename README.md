@@ -2,7 +2,7 @@
 
 Notes, logs and code about Android Development Patterns especially Performance Patterns. #BuildBetterApps #PERFMATTERS
 
-## Contents
+## Categories
 * [Coding principles](coding_principle/coding_principle.md)
 * [Android Development Note](development_note/note.md)
 * [Android Development Patterns](development_patterns/development_patterns.md)
