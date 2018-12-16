@@ -3,11 +3,11 @@
 Notes, logs and code about Android Development Patterns especially Performance Patterns. #BuildBetterApps #PERFMATTERS
 
 ## Contents
-* [Coding principles](coding_principle.md)
-* [Android Development Note](note.md)
-* [Android Development Patterns](development_patterns.md)
-* [Android Performance Note](performance_note.md)
-* [Android Performance Patterns](performance_patterns.md)
-* [Android Kotlin notes](kotlin_note.md)
+* [Coding principles](coding_principle/coding_principle.md)
+* [Android Development Note](development_note/note.md)
+* [Android Development Patterns](development_patterns/development_patterns.md)
+* [Android Performance Note](performance_note/performance_note.md)
+* [Android Performance Patterns](performance_patterns/performance_patterns.md)
+* [Kotlin notes](kotlin/kotlin_note.md)
 * [Resources](resources.md)
-* [Source Code](code)
+* [Source Code](source_code/code.md)
