@@ -1,6 +1,19 @@
-## Terminology
+# Terminology
 
-#### Nested class
+## Serializable vs Parcelable
+
+| Serializable        | Parcelable          |
+| -------------|---------------|
+| Only a marker interface | Provide skeleton to implement |
+| Serialize object into stream of byte (`writeObject()`) | Write to `Parcel` container |
+| Deserialize use no-arg constructor (`readObject()`) | Use `Parcelable.CREATOR` to generate instance and read data from `Parcel` |
+| Use [Java reflection](https://stackoverflow.com/a/8586724/5282585) and use `serialVersionUid` to detect and build object instance | Use `IBinder`, high IPC transport |
+| Slower | Faster (x10) |
+| Create alot of temp object -> cause GC run many times |  |
+| Easy to apply | Need effort to implement |
+
+
+## Nested class
 
 | Static        | Non-static (inner class)    |
 | ------------- | --------------- |
@@ -12,7 +25,7 @@
 |  | Have implicit reference to outer class -> cause memory leaks if live longer than instance of outer class |
 
 
-#### Abstract Class vs Interface
+## Abstract Class vs Interface
 
 | Abstract Class        | Interface          |
 | -------------|---------------|
@@ -24,9 +37,37 @@
 | Have default implementation of methods | Have default implement in Java |
 
 
-#### HashTable
+## HashTable
 
 * key -> value look up.
 * `int hashCode()` function convert object to an int, then use this int to map to **index** of array.
 * No guarantee provide unique int for unique object (to save memory). That can lead to collision.
-* Unique key. Multiple key for a single value. 
+* Unique key. Multiple key for a single value.
+
+
+## Enumerator vs Iterator
+
+| Enumerator        | Iterator          |
+| -------------|---------------|
+|  | have `remove()` |
+| From Java 1.0 | From Java 1.2 |
+| Legacy to support `HashTable`, `Stack`, `Vector` | New |
+| Fail safe | Fail fast -> thread safe, secure |
+
+
+## HashTable vs HashMap
+
+| HashTable        | HashMap          |
+| -------------|---------------|
+| Legacy | New |
+| NonNull | New |
+| Synchronize | Non-sync | 
+
+
+## Vector vs ArrayList
+
+| Vector        | ArrayList          |
+| -------------|---------------|
+| Legacy/Deprecated | New |
+| Synchronize invidual operation, not the whole sequence operations | Non-sync |
+| Data growth | Data expand |
