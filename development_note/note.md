@@ -128,7 +128,7 @@ Every object tree **must** have one or more root objects. As long as the applica
 * Static variables are referenced by their classes.
 * JNI References: are Java objects that the native code has created as part of a JNI call.
 
-![GC](./resources/gc_with_leaks.png "GC")
+![GC](../resources/gc_with_leaks.png "GC")
 
 #### Stop the world event!
 
@@ -334,15 +334,15 @@ To resolve conflict, race condition Java sync is NOT enough -> blocking thread.
 
 #### Java Collections overview
 
-![Collection overview](./resources/IMG_20180311_150117_HDR.jpg "Collection overview")
+![Collection overview](../resources/IMG_20180311_150117_HDR.jpg "Collection overview")
 
 #### Java Collections abstraction
 
-![Collection abstraction](./resources/IMG_20180311_150248_HDR.jpg "Collection abstraction")
+![Collection abstraction](../resources/IMG_20180311_150248_HDR.jpg "Collection abstraction")
 
 #### Map and Dictionary
 
-![Map and dictionary](./resources/IMG_20180311_150219_HDR.jpg "Map and dictionary")
+![Map and dictionary](../resources/IMG_20180311_150219_HDR.jpg "Map and dictionary")
 
 
 ## Enumerator vs Iterator
