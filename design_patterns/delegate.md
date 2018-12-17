@@ -1,6 +1,6 @@
 # Delegate design pattern
 
-Delegate pattern is a design pattern that allows object composition to achieve the same code reuse as inheritance. Interface A with function `foo()`, class B implement A, then other class can use A to execute `foo()`.
+Delegate pattern is an object-oriented design pattern that allows object composition to achieve the same code reuse as inheritance.. Interface A with function `foo()`, class B implement A, then other class can use A to execute `foo()`.
 
 => Decoupling -> Reduce coupling between client and implementation
 

@@ -1,3 +1,7 @@
+# Kotlin
+
+Kotlin is a statically typed programming language that runs on the Java virtual machine and also can be compiled to JavaScript source code or use the LLVM compiler infrastructure. 
+
 ## Difference between Kotlin and Java in Android.
 
 * Null safety which is [bilions dollar mistake](https://android.jlelse.eu/how-kotlin-addresses-the-billion-dollar-mistake-27609c82703e).
