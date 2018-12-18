@@ -73,4 +73,6 @@ Write better Android apps faster with Kotlin - a modern statically typed languag
 See [more](cates/kotlin/kotlin_note.md)
 
 
-## [References](cates/references.md)
+## References
+
+List of references used. See [this](cates/references.md)
