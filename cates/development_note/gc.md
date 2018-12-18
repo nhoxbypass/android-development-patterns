@@ -11,7 +11,7 @@ Every object tree **must** have one or more root objects. As long as the applica
 * Static variables are referenced by their classes.
 * JNI References: are Java objects that the native code has created as part of a JNI call.
 
-![GC](../resources/gc_with_leaks.png "GC")
+![GC](../../resources/gc_with_leaks.png "GC")
 
 
 ## Stop the world event!
