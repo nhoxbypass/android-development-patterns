@@ -4,12 +4,16 @@ Notes, logs and code about Android Development Patterns especially Performance P
 
 ## Categories
 
-#### [Coding principles](cates/coding_principle/coding_principle.md)
+#### Coding principles
+
+Aim to write code that can be maintained — not only by yourself, but by anyone else. See [more](cates/coding_principle/coding_principle.md)
 
 * [SOLID](cates/coding_principle/coding_principle.md#solid)
 
 
-#### [Android Development Note](cates/development_note/note.md)
+#### Android Development Note
+
+Discover surprise Android development knowledge, resources and theory with examples. See [more](cates/development_note/note.md)
 
 * [Bitmap](cates/development_note/note.md#bitmap)
 * [Threading](cates/development_note/note.md#threading)
@@ -25,10 +29,14 @@ Notes, logs and code about Android Development Patterns especially Performance P
 * [Java collections](cates/development_note/note.md#java-collections)
 
 
-#### [Android Development Patterns](cates/development_patterns/development_patterns.md)
+#### Android Development Patterns
+
+A Series on Best Practices for Android Development. Centered on Android framework APIs, the Android Support Library, and high level app structure and design. See [more](cates/development_patterns/development_patterns.md)
 
 
-#### [Android Performance Note](cates/performance_note/performance_note.md)
+#### Android Performance Note
+
+Discover surprise knowledge about many aspect of performance in Android apps as well as some micro-optimizations. See [more](cates/performance_note/performance_note.md)
 
 * [UI Performance](cates/performance_note/performance_note.md#ui-performance)
 * [Execute Speed Performance](cates/performance_note/performance_note.md#execute-speed-performance)
@@ -36,7 +44,9 @@ Notes, logs and code about Android Development Patterns especially Performance P
 * [Power Performance](cates/performance_note/performance_note.md#power-performance)
 
 
-#### [Android Performance Patterns](cates/performance_patterns/performance_patterns.md)
+#### Android Performance Patterns
+
+A collection of videos focused entirely on helping developers write faster, more performant Android Applications. See [more](cates/performance_patterns/performance_patterns.md)
 
 * [Season 02](cates/performance_patterns/performance_patterns.md#season-02)
 * [Season 03](cates/performance_patterns/performance_patterns.md#season-03)
@@ -44,7 +54,9 @@ Notes, logs and code about Android Development Patterns especially Performance P
 * [Season 05](cates/performance_patterns/performance_patterns.md#season-05)
 
 
-#### [Kotlin notes](cates/kotlin/kotlin_note.md)
+#### Kotlin notes
+
+Write better Android apps faster with Kotlin - a modern statically typed programming language - and boost your productivity, increase your developer happiness. See [more](cates/kotlin/kotlin_note.md))
 
 * [Difference between Kotlin and Java in Android](cates/kotlin/kotlin_note.md#difference-between-kotlin-and-java-in-android)
 

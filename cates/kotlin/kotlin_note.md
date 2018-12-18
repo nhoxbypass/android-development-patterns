@@ -1,5 +1,7 @@
 # Kotlin
 
+Write better Android apps faster with Kotlin - a modern statically typed programming language - and boost your productivity, increase your developer happiness.
+
 Kotlin is a statically typed programming language that runs on the Java virtual machine and also can be compiled to JavaScript source code or use the LLVM compiler infrastructure. 
 
 ## Difference between Kotlin and Java in Android.

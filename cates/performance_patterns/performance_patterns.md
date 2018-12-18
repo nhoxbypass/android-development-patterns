@@ -1,5 +1,11 @@
 # Android Performance Patterns
 
+A collection of videos focused entirely on helping developers write faster, more performant Android Applications.
+
+On one side, it’s about peeling back the layers of the Android System, and exposing how things are working under the hood. On the other side, it’s about teaching you how the tools work, and what to look for in order to extract the right perf out of your app. 
+
+But at the end of the day, Android Performance Patterns is all giving you the right resources, at the right time to help make the fastest, smoothest, most awesome experience for your users. And that’s the whole point, right?
+
 ## Season 02
 
 * [Ep 01: Battery Drain and Networking](pp_ss02.md#ep-01-battery-drain-and-networking)

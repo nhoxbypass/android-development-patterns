@@ -1,5 +1,7 @@
 # Android Performance Notes
 
+Discover surprise knowledge about many aspect of performance in Android apps as well as some micro-optimizations that can improve overall app performance when combined.
+
 ## UI Performance
 
 * [Avoid slow rendering](ui_performance.md#avoid-slow-rendering)

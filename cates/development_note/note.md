@@ -1,5 +1,6 @@
 # Android Development Notes
 
+Discover surprise Android development knowledge, resources and theory with examples.
 
 ## Bitmap
 
