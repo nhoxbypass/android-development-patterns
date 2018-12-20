@@ -11,6 +11,18 @@ Aim to write code that can be maintained — not only by yourself, but by anyone
 * [SOLID](cates/coding_principle/coding_principle.md#solid)
 
 
+### Design Patterns
+
+A design pattern is a general repeatable solution to a commonly occurring problem in software design.
+
+* [Delegate design pattern](cates/design_patterns/design_patterns.md#delegate-design-pattern)
+
+
+### Architectural Patterns
+
+An architectural pattern is a general, reusable solution to a commonly occurring problem in software architecture within a given context.
+
+
 ### Android Development Note
 
 Discover surprise Android development knowledge, resources and theory with examples.
@@ -59,6 +71,24 @@ A collection of videos focused entirely on helping developers write faster, more
 Write better Android apps faster with Kotlin - a modern statically typed language - and boost your productivity, increase your developer happiness. 
 
 * [Difference between Kotlin and Java in Android](cates/kotlin/kotlin_note.md#difference-between-kotlin-and-java-in-android)
+
+
+### Terminology
+
+List of clarification about programming terms, definitions, commands, and glossary. Comparison between similar terminologies.
+
+* [Serializable vs Parcelable](cates/terminology/terminology.md#serializable-vs-parcelable)
+* [Nested class](cates/terminology/terminology.md#nested-class)
+* [Abstract Class vs Interface](cates/terminology/terminology.md#abstract-class-vs-interface)
+* [HashTable](cates/terminology/terminology.md#hashtable)
+* [Enumerator vs Iterator](cates/terminology/terminology.md#enumerator-vs-iterator)
+* [HashTable vs HashMap](cates/terminology/terminology.md#hashtable-vs-hashmap)
+* [Vector vs ArrayList](cates/terminology/terminology.md#vector-vs-arraylist)
+
+
+### Misc
+
+Miscellaneous.
 
 
 ## References

@@ -1,5 +1,7 @@
 # Terminology
 
+List of clarification about programming terms, definitions, commands, and glossary. Comparison between similar terminologies.
+
 ## Serializable vs Parcelable
 
 | Serializable        | Parcelable          |
