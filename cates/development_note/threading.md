@@ -50,7 +50,7 @@ For real life example, look at [this](https://stackoverflow.com/questions/181499
 
 1. Create new `Thread`: `Thread t = new Thread(new Runnable() {...});` then start it `t.start()`. (Bad practice)
 2. Create a new [class](https://stackoverflow.com/questions/9671546/asynctask-android-example) that extends `AsyncTask`, and implement the code that need work off main thread inside `doOnBackground()` callback. Then write code to update result, UI inside `onPostExecute()` callback. Finally init and `execute()` this task. (Known source of memory leaks).
-3. Create a custom [worker thread](https://stackoverflow.com/questions/13235312/what-are-worker-threads-and-what-is-their-role-in-the-reactor-pattern) using `Executor` `Executor executor = Executors.newSingleThreadExecutor()` and execute task using `executor.execute(new Runnable() {...})`. 
+3. Create a custom [worker thread](https://stackoverflow.com/questions/13235312/what-are-worker-threads-and-what-is-their-role-in-the-reactor-pattern) using `Executor` `Executor executor = Executors.newSingleThreadExecutor()` and execute task using `executor.execute(new Runnable() {...})`. (Recommended - reuse threads to avoid thread creation cost)
 4. Create a new `HandlerThread` and start the same as normal Thread. And use Handler to communicate. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
 5. Create a new class that extends `IntentService` and implement it. Then trigger start using an Intent to pawns a new worker thread. See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
 
