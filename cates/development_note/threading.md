@@ -50,7 +50,7 @@ For real life example, look at [this](https://stackoverflow.com/questions/181499
 
 Every Android app has a main thread which is in charge of handling UI (including measuring and drawing views), coordinating user interactions, and receiving lifecycle events. If there is too much work happening on this thread, the app appears to hang or slow down. Any long-running computations/operations that takes more than a few millisecs (such as decoding a bitmap, accessing the disk, or performing network requests,..) should be done on a separate background thread
 
-There are some ways for your app to perform operations in the background without hurting app performance:
+There are some ways for your app to perform operations in the background without hurting app performance. See [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-01) to see when to use which approach.
 
 #### Normal Thread
 
@@ -60,13 +60,19 @@ Implement a `Runnable` by overriding and place the code that need to be executed
 
 [AsyncTask](https://developer.android.com/reference/android/os/AsyncTask) is a proper and easy use to perform background operations and publish results on the UI thread without having to manipulate threads and/or handlers.
 
-Create a new class that extends `AsyncTask`, override `doInBackground(Params...)` and implement the code that need to get off main thread. Then if you want to use the result to update UI, override `onPostExecute(Result)`. Init and invoke `execute()` to start this task. 
+To use it, you must subclass AsyncTask and implement the `doInBackground()` callback method, which runs in a pool of background threads. To update your UI, you should implement `onPostExecute()`, which delivers the result from `doInBackground()` and runs in the UI thread, so you can safely update your UI. You can then run the task by calling `execute()` from the UI thread.
    
 See this [example](https://stackoverflow.com/questions/9671546/asynctask-android-example). (Quick solution but known source of memory leaks).
 
 #### ThreadPools
 
-Using `ThreadPools` - which providing a group of background threads that accept and enqueue submitted work -  with `Executor`. Create new group of ThreadPools base on your need (network, disk I/O, and computation,..) using `Executor executor = Executors.newSingleThreadExecutor()` and execute task using `executor.execute(new Runnable() {...})`. (Recommended - reuse threads to **avoid thread creation cost**)
+[ThreadPools](https://developer.android.com/training/multiple-threads/create-threadpool) provide a group of background threads that accept and enqueue submitted work.
+
+[ThreadPoolExecutor](https://developer.android.com/reference/java/util/concurrent/ThreadPoolExecutor) is an `ExecutorService` that executes each submitted task from a queue, when a thread in its pool becomes free/available.
+
+Thread pools address two different problems: they usually provide improved performance when executing large numbers of asynchronous tasks, due to reduced per-task invocation overhead, and they provide a means of bounding and managing the resources, including threads, consumed when executing a collection of tasks.
+
+Create new group of ThreadPools base on your need (network, disk I/O, and computation,..) using `Executor executor = Executors.newFixedThreadPool(int)` (fixed size thread pool) and execute task using `executor.execute(Runnable)`. (Recommended - reuse threads to **avoid thread creation cost**)
 
 #### Worker Thread
 
@@ -74,13 +80,18 @@ Create a custom [worker thread](https://stackoverflow.com/questions/13235312/wha
 
 #### HandlerThread
 
-Create a new `HandlerThread` and start the same as normal Thread. And use Handler to communicate. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
+[HandlerThread](https://developer.android.com/reference/android/os/HandlerThread) Handy class for starting a new thread that has a looper.
+
+Create a new `HandlerThread` and invoke `start()` the same as normal Thread. And use `Handler` - part of the Android system's framework for managing threads -  to communicate by receiving messages. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
 
 #### IntentService
 
-Create a new class that extends `IntentService` and implement it. Then trigger start using an Intent to pawns a new worker thread. See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
+[IntentService](https://developer.android.com/reference/android/app/IntentService) is a base class for `Service` that handle asynchronous requests (expressed as Intents) on demand
 
-See [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-01) to see when to use which approach.
+Create a new class that extends `IntentService` and implement it. Then clients send requests through `Context.startService(Intent)` to pawns a new worker thread to handle task and automatically stops itself when it runs out of work. 
+
+See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
+
 
 #### Using external libraries:  
 
