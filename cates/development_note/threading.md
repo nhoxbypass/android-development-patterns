@@ -48,13 +48,23 @@ For real life example, look at [this](https://stackoverflow.com/questions/181499
 
 ## Ways to get work off main thread.
 
+Every Android app has a main thread which is in charge of handling UI (including measuring and drawing views), coordinating user interactions, and receiving lifecycle events. If there is too much work happening on this thread, the app appears to hang or slow down. Any long-running computations/operations that takes more than a few millisecs (such as decoding a bitmap, accessing the disk, or performing network requests,..) should be done on a separate background thread
+
+There are some ways for your app to perform operations in the background without hurting app performance:
+
 1. Create new `Thread`: `Thread t = new Thread(new Runnable() {...});` then start it `t.start()`. (Bad practice)
 2. Create a new [class](https://stackoverflow.com/questions/9671546/asynctask-android-example) that extends `AsyncTask`, and implement the code that need work off main thread inside `doOnBackground()` callback. Then write code to update result, UI inside `onPostExecute()` callback. Finally init and `execute()` this task. (Known source of memory leaks).
-3. Create a custom [worker thread](https://stackoverflow.com/questions/13235312/what-are-worker-threads-and-what-is-their-role-in-the-reactor-pattern) using `Executor` `Executor executor = Executors.newSingleThreadExecutor()` and execute task using `executor.execute(new Runnable() {...})`. (Recommended - reuse threads to avoid thread creation cost)
-4. Create a new `HandlerThread` and start the same as normal Thread. And use Handler to communicate. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
-5. Create a new class that extends `IntentService` and implement it. Then trigger start using an Intent to pawns a new worker thread. See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
+3. Create a custom [worker thread](https://stackoverflow.com/questions/13235312/what-are-worker-threads-and-what-is-their-role-in-the-reactor-pattern).
+4. Using `ThreadPools` - which providing a group of background threads that accept and enqueue submitted work -  with `Executor`. Create new group of ThreadPools base on your need (network, disk I/O, and computation,..) using `Executor executor = Executors.newSingleThreadExecutor()` and execute task using `executor.execute(new Runnable() {...})`. (Recommended - reuse threads to **avoid thread creation cost**)
+5. Create a new `HandlerThread` and start the same as normal Thread. And use Handler to communicate. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
+6. Create a new class that extends `IntentService` and implement it. Then trigger start using an Intent to pawns a new worker thread. See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
 
 See [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-01) to see when to use which approach.
+
+Or using some external libraries like: 
+
+1. [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) is part of Android Jetpack, a lib that gracefully runs deferrable background work when the work's triggers (like appropriate network state and battery conditions) are satisfied. Recommended for work that must execute to completion and is deferrable.
+2. [RxJava](https://github.com/ReactiveX/RxJava) Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.
 
 
 ## Race condition
