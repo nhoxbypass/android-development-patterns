@@ -52,16 +52,37 @@ Every Android app has a main thread which is in charge of handling UI (including
 
 There are some ways for your app to perform operations in the background without hurting app performance:
 
-1. Create new `Thread`: `Thread t = new Thread(new Runnable() {...});` then start it `t.start()`. (Bad practice)
-2. Create a new class that extends `AsyncTask`, and implement the code that need work off main thread inside `doOnBackground()` callback. Then write code to update result, UI inside `onPostExecute()` callback. Finally init and `execute()` this task. See this [example](https://stackoverflow.com/questions/9671546/asynctask-android-example). (Quick solution but known source of memory leaks).
-3. Create a custom [worker thread](https://stackoverflow.com/questions/13235312/what-are-worker-threads-and-what-is-their-role-in-the-reactor-pattern).
-4. Using `ThreadPools` - which providing a group of background threads that accept and enqueue submitted work -  with `Executor`. Create new group of ThreadPools base on your need (network, disk I/O, and computation,..) using `Executor executor = Executors.newSingleThreadExecutor()` and execute task using `executor.execute(new Runnable() {...})`. (Recommended - reuse threads to **avoid thread creation cost**)
-5. Create a new `HandlerThread` and start the same as normal Thread. And use Handler to communicate. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
-6. Create a new class that extends `IntentService` and implement it. Then trigger start using an Intent to pawns a new worker thread. See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
+#### Normal Thread
+
+Implement a `Runnable` by overriding and place the code that need to be executed inside `Runnable.run()` method. Then create a new thread using `Thread t = new Thread(Runnable runnable);` and start it with `t.start()`. (Bad practice, thread creation is costly).
+
+#### AsyncTask
+
+[AsyncTask](https://developer.android.com/reference/android/os/AsyncTask) is a proper and easy use to perform background operations and publish results on the UI thread without having to manipulate threads and/or handlers.
+
+Create a new class that extends `AsyncTask`, override `doInBackground(Params...)` and implement the code that need to get off main thread. Then if you want to use the result to update UI, override `onPostExecute(Result)`. Init and invoke `execute()` to start this task. 
+   
+See this [example](https://stackoverflow.com/questions/9671546/asynctask-android-example). (Quick solution but known source of memory leaks).
+
+#### ThreadPools
+
+Using `ThreadPools` - which providing a group of background threads that accept and enqueue submitted work -  with `Executor`. Create new group of ThreadPools base on your need (network, disk I/O, and computation,..) using `Executor executor = Executors.newSingleThreadExecutor()` and execute task using `executor.execute(new Runnable() {...})`. (Recommended - reuse threads to **avoid thread creation cost**)
+
+#### Worker Thread
+
+Create a custom [worker thread](https://stackoverflow.com/questions/13235312/what-are-worker-threads-and-what-is-their-role-in-the-reactor-pattern).
+
+#### HandlerThread
+
+Create a new `HandlerThread` and start the same as normal Thread. And use Handler to communicate. See [this](https://stackoverflow.com/questions/25094330/example-communicating-with-handlerthread).
+
+#### IntentService
+
+Create a new class that extends `IntentService` and implement it. Then trigger start using an Intent to pawns a new worker thread. See [this](https://code.tutsplus.com/tutorials/android-fundamentals-intentservice-basics--mobile-6183).
 
 See [this](https://github.com/nhoxbypass/android-development-patterns-note/blob/master/performance_note.md#season-5-ep-01) to see when to use which approach.
 
-Or using some external libraries like: 
+#### Using external libraries:  
 
 1. [WorkManager](https://developer.android.com/topic/libraries/architecture/workmanager) is part of Android Jetpack, a lib that gracefully runs deferrable background work when the work's triggers (like appropriate network state and battery conditions) are satisfied. Recommended for work that must execute to completion and is deferrable.
 2. [RxJava](https://github.com/ReactiveX/RxJava) Reactive Extensions for the JVM – a library for composing asynchronous and event-based programs using observable sequences for the Java VM.
