@@ -2,13 +2,13 @@
 
 Android is an open source, Linux-based software stack created for a wide array of devices and form factors. The following diagram shows the major components of the Android platform.
 
-Android system architecture
+**Android system architecture**
 
 ![Android system architecture](/resources/ape_fwk_all.png)
 
-The Android software stack
+**Android software stack**
 
-![The Android software stack](/resources/android-stack_2x.png)
+![Android software stack](/resources/android-stack_2x.png)
 
 
 ## The Linux Kernel
