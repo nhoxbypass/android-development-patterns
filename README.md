@@ -33,6 +33,7 @@ Discover surprise Android development knowledge, resources and theory with examp
 * [Garbage Collector](cates/development_note/note.md#garbage-collector)
 * [Memory leaks](cates/development_note/note.md#memory-leaks)
 * [Loader](cates/development_note/note.md#loader)
+* [Platform Architecture](cates/development_note/note.md#platform-architecture)
 * [Virtual Machine](cates/development_note/note.md#virtual-machine)
 * [How to build an APK](cates/development_note/note.md#how-to-build-an-apk)
 * [Android Runtime](cates/development_note/note.md#android-runtime)

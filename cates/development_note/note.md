@@ -61,6 +61,20 @@ The Loader API lets you load data from a content provider or other data source f
 See [more](loader.md)
 
 
+## Platform Architecture
+
+Android is an open source, Linux-based software stack created for a wide array of devices and form factors. 
+
+* [The Linux Kernel](platform_architecture.md#the-linux-kernel)
+* [Hardware Abstraction Layer (HAL)](platform_architecture.md#hardware-abstraction-layer-hal)
+* [Android Runtime](platform_architecture.md#android-runtime)
+* [System Services](platform_architecture.md#system-services)
+* [Native C/C++ Libraries](platform_architecture.md#native-c-c++-libraries)
+* [Binder IPC](platform_architecture.md#binder-ipc)
+* [Java API Framework](platform_architecture.md#java-api-framework)
+* [System Apps](platform_architecture.md#system-apps)
+
+
 ## Virtual Machine
 
 Virtual Machine allow Java/Kotlin programs to run on any device or operating system (known as the "Write once, run anywhere" principle), and to manage, optimize program resources & memory. 
