@@ -69,7 +69,7 @@ Android is an open source, Linux-based software stack created for a wide array o
 * [Hardware Abstraction Layer (HAL)](platform_architecture.md#hardware-abstraction-layer-hal)
 * [Android Runtime](platform_architecture.md#android-runtime)
 * [System Services](platform_architecture.md#system-services)
-* [Native C/C++ Libraries](platform_architecture.md#native-c-c++-libraries)
+* [Native C/C++ Libraries](platform_architecture.md#native-cc-libraries)
 * [Binder IPC](platform_architecture.md#binder-ipc)
 * [Java API Framework](platform_architecture.md#java-api-framework)
 * [System Apps](platform_architecture.md#system-apps)
