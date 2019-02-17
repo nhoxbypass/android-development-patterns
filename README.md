@@ -22,6 +22,8 @@ A design pattern is a general repeatable solution to a commonly occurring proble
 
 An architectural pattern is a general, reusable solution to a commonly occurring problem in software architecture within a given context.
 
+* [Guide to app architecture](cates/architectural_patterns/architectural_patterns#guide-to-app-architecture)
+
 
 ### Android Development Note
 
