@@ -34,6 +34,44 @@ Persistence is ideal for the following reasons:
 By basing your app on model classes with the well-defined responsibility of managing the data, your app is more testable and consistent.
 
 
+## Android Architecture Components   
+
+Android architecture components are a collection of libraries that help you design robust, testable, and maintainable apps. Start with classes for managing your UI component lifecycle and handling data persistence.
+
+Manage your app's lifecycle with ease. New lifecycle-aware components help you manage your `Activity` and `Fragment` lifecycles. Survive configuration changes, avoid memory leaks and easily load data into your UI.
+
+#### ViewModel
+
+[ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel): Stores and manage UI-related data in a lifecycle conscious way. Allows data to **survive configuration changes such as screen rotations**.
+
+A `ViewModel` object **provides the data for a specific UI component (fragment, activity,..), and contains data-handling business logic to communicate with the model**. For example, the `ViewModel` can call other components to load the data, and it can forward user requests to modify the data. `ViewModel` doesn't know about UI components, so it isn't affected by configuration changes (recreating an activity when rotating the device).
+
+If the system destroys or re-creates a UI controller, any transient UI-related data you store in them is lost. For simple data, the `Activity` can use the `onSaveInstanceState()` method and restore its data from the bundle in `onCreate()`, but this approach is only suitable for small amounts of data that can be serialized then deserialized, not for potentially large amounts of data like a list of users or bitmaps.
+
+UI controllers such as activities and fragments are primarily intended to display UI data, react to user actions, or handle OS communication (such as permission requests). Requiring UI controllers to also be responsible for loading data from a database or network **adds bloating code to the class**. Assigning excessive responsibility to UI controllers can result in a **single class that tries to handle all of an app's work by itself, instead of delegating work to other classes, this way also makes testing a lot harder. It's easier and more efficient to separate out view data ownership from UI controller logic.**
+
+
+#### LiveData
+
+[LiveData](https://developer.android.com/topic/libraries/architecture/livedata): An observable data holder to build data objects that **notify views when the underlying database changes**.
+
+`LiveData` is an observable data holder class. Unlike a regular observable, **LiveData is lifecycle-aware**, meaning it respects the lifecycle of other app components, such as activities, fragments, or services. This awareness **ensures LiveData only updates app component observers that are in an active lifecycle state**. 
+
+Other components in your app can **monitor changes to objects** using this holder without creating explicit and rigid dependency paths between them. The LiveData component also respects the lifecycle state of your app's components—such as activities, fragments, and services—and includes **cleanup logic to prevent object leaking and excessive memory consumption**.
+
+#### Room
+
+[Room](https://developer.android.com/topic/libraries/architecture/room) An a SQLite object mapping library. Use it to easily convert SQLite table data to Java objects and avoid boilerplate code.
+
+`Room` is an **object-mapping library that provides local data persistence with minimal boilerplate code by abstracting away some of the underlying implementation details of working with raw SQLite tables and queries**. It also allows you to observe changes to the database's data, including collections and join queries, exposing such changes using `LiveData` objects. It even **explicitly defines execution constraints that address common threading issues, such as accessing storage on the main thread**.
+
+**At compile time, it validates each query** against your data schema, so broken SQL queries result in compile-time errors instead of runtime failures.
+
+`Room` can return `RxJava`, `Flowable` and `LiveData` observables.
+
+If your app already uses another persistence solution, such as a SQLite object-relational mapping (ORM), you don't need to replace your existing solution with `Room`. However, if you're writing a new app or refactoring an existing app - because `Room` takes care of these concerns for you - we highly recommend using `Room` to persist your app's data.
+
+
 ## Recommended app architecture
 
 #### Overview
@@ -46,48 +84,102 @@ Notice that **each component depends only on the component one level below it**.
 
 Note: It's impossible to have one way of writing apps that works best for every scenario. That being said, this recommended architecture is a good starting point for most situations and workflows. If you already have a good way of writing Android apps that follows the [common architectural principles](app_architecture.md#common-architecture-principles), you don't need to change it.
 
-**Repository**
 
-Repository modules handle data operations. The Repository pattern adds an abstraction layer over the top of data access, to provide a clean & centralising API so that the rest of the app can retrieve this data easily. They know where to get the data from and what API calls to make when data is updated. You can consider repositories to be mediators between different data sources, such as persistent models, web services, and caches.
+#### Distributing responsibilities
+
+![Typical interaction of entities in an app built with Architecture Components](/resources/viewmodel_distributing_res.png)
+
+Ideally, `ViewModel`s contain logic-only and shouldn’t know anything about Android. This improves testability, leak safety and modularity. A general rule of thumb is to make sure there are no `android.*` imports in your `ViewModel`s (with exceptions like `android.arch.*`). 
+
+Keep the logic in `Activity` and `Fragment` to a minimum. Conditional statements, loops,.. should be done in `ViewModel`s or other layers of an app, not in activities or fragments. The View layer is usually not unit tested (unless you use `Robolectric`) so the fewer lines of code the better. Views should only know how to display data and send user events to the `ViewModel`. This is called the [Passive View pattern](https://martinfowler.com/eaaDev/PassiveScreen.html).
 
 
-#### Android Architecture Components   
+#### Observer pattern with LiveData
 
-Android architecture components are a collection of libraries that help you design robust, testable, and maintainable apps. Start with classes for managing your UI component lifecycle and handling data persistence.
+![ViewModel Observer Pattern](/resources/viewmodel_observer.png)
 
-Manage your app's lifecycle with ease. New lifecycle-aware components help you manage your `Activity` and `Fragment` lifecycles. Survive configuration changes, avoid memory leaks and easily load data into your UI.
+Instead of actively pushing data to the UI, let the UI observe changes to it.
 
-**ViewModel**
+View (activity or fragment) should observe (subscribe to changes in) the `ViewModel`. Since the `ViewModel`doesn’t know about Android, it doesn’t know how Android likes to kill Views frequently. This has some advantages:
 
-[ViewModel](https://developer.android.com/topic/libraries/architecture/viewmodel): Stores and manage UI-related data in a lifecycle conscious way. Allows data to **survive configuration changes such as screen rotations**.
+* ViewModels are persisted over configuration changes, so there’s no need to re-query an external source for data (such as a database or the network) when a rotation happens.
+* When long-running operations finish, the observables in the ViewModel are updated. It doesn’t matter if the data is being observed or not. No null pointer exceptions happen when trying to update the nonexistent View.
+* ViewModels don’t reference views so there’s less risk of memory leaks.
 
-A `ViewModel` object **provides the data for a specific UI component (fragment, activity,..), and contains data-handling business logic to communicate with the model**. For example, the `ViewModel` can call other components to load the data, and it can forward user requests to modify the data. `ViewModel` doesn't know about UI components, so it isn't affected by configuration changes (recreating an activity when rotating the device).
+```
+private void subscribeToModel() {
+  // Observe product data
+  viewModel.getObservableProduct().observe(this, new Observer<Product>() {
+      @Override
+      public void onChanged(@Nullable Product product) {
+        tvTitle.setText(product.title);
+      }
+  });
+}
+```
 
-If the system destroys or re-creates a UI controller, any transient UI-related data you store in them is lost. For simple data, the `Activity` can use the `onSaveInstanceState()` method and restore its data from the bundle in `onCreate()`, but this approach is only suitable for small amounts of data that can be serialized then deserialized, not for potentially large amounts of data like a list of users or bitmaps.
 
-Another problem is that UI controllers frequently need to make asynchronous calls that may take some time to return. The UI controller needs to manage these calls and ensure the system cleans them up after it's destroyed to avoid potential memory leaks. This management requires a lot of maintenance, and in the case where the object is re-created for a configuration change, it's a waste of resources since the object may have to reissue calls it has already made.
+#### Using data repository
 
-UI controllers such as activities and fragments are primarily intended to display UI data, react to user actions, or handle OS communication (such as permission requests). Requiring UI controllers to also be responsible for loading data from a database or network **adds bloating code to the class**. Assigning excessive responsibility to UI controllers can result in a **single class that tries to handle all of an app's work by itself, instead of delegating work to other classes, this way also makes testing a lot harder. It's easier and more efficient to separate out view data ownership from UI controller logic.**
+Repository modules handle data operations. The Repository pattern **adds an abstraction layer over the top of data access, to provide a clean & centralising API so that the rest of the app can retrieve this data easily**. They know where to get the data from and what API calls to make when data is updated. 
 
-**LiveData**
+You can consider repositories to be mediators between different data sources:
+* Remote: RestAPI or cloud services (Firebase, AWS,..).
+* Local: database or file.
+* In-memory cache.
 
-[LiveData](https://developer.android.com/topic/libraries/architecture/livedata): An observable data holder to build data objects that **notify views when the underlying database changes**.
+It’s a good idea to have a data layer in your app, completely unaware of your presentation layer. Algorithms to keep cache and database in sync with the network are not trivial. Having a separate repository class as the single-point entry to your data.
 
-`LiveData` is an observable data holder class. Unlike a regular observable, **LiveData is lifecycle-aware**, meaning it respects the lifecycle of other app components, such as activities, fragments, or services. This awareness **ensures LiveData only updates app component observers that are in an active lifecycle state**. 
 
-Other components in your app can **monitor changes to objects** using this holder without creating explicit and rigid dependency paths between them. The LiveData component also respects the lifecycle state of your app's components—such as activities, fragments, and services—and includes **cleanup logic to prevent object leaking and excessive memory consumption**.
+#### View references in ViewModels
 
-**Room**
+Avoid references to Views in ViewModels.
 
-[Room](https://developer.android.com/topic/libraries/architecture/room) An a SQLite object mapping library. Use it to easily convert SQLite table data to Java objects and avoid boilerplate code.
+ViewModels have different scopes than activities or fragments. While a ViewModel is alive and running, an activity can be in any of its [lifecycle states](https://developer.android.com/guide/components/activities/activity-lifecycle.html). Activities and fragments can be destroyed and created again while the ViewModel is unaware.
 
-`Room` is an **object-mapping library that provides local data persistence with minimal boilerplate code by abstracting away some of the underlying implementation details of working with raw SQLite tables and queries**. It also allows you to observe changes to the database's data, including collections and join queries, exposing such changes using `LiveData` objects. It even **explicitly defines execution constraints that address common threading issues, such as accessing storage on the main thread**.
+![ViewModels persist configuration changes](/resources/viewmodel_scope.png)
 
-**At compile time, it validates each query** against your data schema, so broken SQL queries result in compile-time errors instead of runtime failures.
+Passing a reference of the View (activity or fragment) to the ViewModel is a serious risk. Let’s assume the ViewModel requests data from the network and the data comes back some time later. At that moment, the View reference might be destroyed or might be an old activity that is no longer visible, generating a memory leak and, possibly, a crash.
 
-`Room` can return `RxJava`, `Flowable` and `LiveData` observables.
+The recommended way to communicate between ViewModels and Views is the observer pattern (said above), using LiveData or observables from other libraries (RxJava,..).
 
-If your app already uses another persistence solution, such as a SQLite object-relational mapping (ORM), you don't need to replace your existing solution with `Room`. However, if you're writing a new app or refactoring an existing app - because `Room` takes care of these concerns for you - we highly recommend using `Room` to persist your app's data.
+
+#### Leaking ViewModels
+
+Consider edge cases, leaks and how long-running operations can affect the instances in your architecture.
+
+The reactive paradigm works well in Android because it allows for a convenient connection between UI and the rest of the layers of your app. LiveData is the key component of this structure so normally your activities and fragments will observe LiveData instances.
+
+How ViewModels communicate with other components is up to you, but watch out for leaks and edge cases. Consider this diagram where the Presentation layer is using the observer pattern and the Data Layer is using callbacks:
+
+![Observer pattern in the UI and callbacks in the data layer](/resources/leaking_viewmodel.png)
+
+If the user exits the app, the View will be gone so the ViewModel is not observed anymore. If the repository is a singleton or otherwise scoped to the application, **the repository will not be destroyed until the process is killed**. This will only happen when the system needs resources or the user manually kills the app. If the repository is holding a reference to a callback in the ViewModel, the ViewModel will be temporarily leaked
+
+![The activity is finished but the ViewModel is still around](/resources/leaking_viewmodel_1.png)
+
+This leak is not a big deal if the ViewModel is light or the operation is guaranteed to finish quickly. However, this is not always the case. Ideally, ViewModels should be free to go whenever they don’t have any Views observing them:
+
+![The activity is finished and the ViewModel is cleared](/resources/leaking_viewmodel_2.png)
+
+You have many options to achieve this:
+
+* With `ViewModel.onCleared()` you can tell the repository to drop the callback to the ViewModel.
+* In the repository you can use a `WeakReference` or you can use an `Event Bus` (both easy to misuse and even considered harmful).
+* Use the LiveData to communicate between the Repository and ViewModel in a similar way to using LiveData between the View and the ViewModel.
+
+Don’t put logic in the ViewModel that is critical to saving clean state or related to data. Any call you make from a ViewModel can be the last one.
+
+
+#### LiveData in repository
+
+To avoid leaking ViewModels and callback hell, repositories can be observed
+
+![LiveData in repository](/resources/livedata_repository.png)
+
+When the ViewModel is cleared or when the lifecycle of the view is finished, the subscription is cleared:
+
+![LiveData in repository](/resources/livedata_repository_1.png)
 
 
 #### Manage dependencies between components
