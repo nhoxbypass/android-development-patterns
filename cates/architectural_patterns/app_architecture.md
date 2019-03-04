@@ -89,7 +89,7 @@ Note: It's impossible to have one way of writing apps that works best for every 
 
 ![Typical interaction of entities in an app built with Architecture Components](/resources/viewmodel_distributing_res.png)
 
-Ideally, `ViewModel`s contain logic-only and shouldn’t know anything about Android. This improves testability, leak safety and modularity. A general rule of thumb is to make sure there are no `android.*` imports in your `ViewModel`s (with exceptions like `android.arch.*`). 
+Ideally, **ViewModels contain logic-only and shouldn’t know anything about Android**. This improves testability, leak safety and modularity. A general rule of thumb is to make sure there are no `android.*` imports in your `ViewModel`s (with exceptions like `android.arch.*`). 
 
 Keep the logic in `Activity` and `Fragment` to a minimum. Conditional statements, loops,.. should be done in `ViewModel`s or other layers of an app, not in activities or fragments. The View layer is usually not unit tested (unless you use `Robolectric`) so the fewer lines of code the better. Views should only know how to display data and send user events to the `ViewModel`. This is called the [Passive View pattern](https://martinfowler.com/eaaDev/PassiveScreen.html).
 
@@ -98,13 +98,13 @@ Keep the logic in `Activity` and `Fragment` to a minimum. Conditional statements
 
 ![ViewModel Observer Pattern](/resources/viewmodel_observer.png)
 
-Instead of actively pushing data to the UI, let the UI observe changes to it.
+**Instead of actively pushing data to the UI, let the UI observe changes to it**.
 
 View (activity or fragment) should observe (subscribe to changes in) the `ViewModel`. Since the `ViewModel`doesn’t know about Android, it doesn’t know how Android likes to kill Views frequently. This has some advantages:
 
-* ViewModels are persisted over configuration changes, so there’s no need to re-query an external source for data (such as a database or the network) when a rotation happens.
-* When long-running operations finish, the observables in the ViewModel are updated. It doesn’t matter if the data is being observed or not. No null pointer exceptions happen when trying to update the nonexistent View.
-* ViewModels don’t reference views so there’s less risk of memory leaks.
+* `ViewModel`s are persisted over configuration changes, so there’s no need to re-query an external source for data (such as a database or the network) when a screen-rotation happens.
+* When long-running operations finish, the observables in the `ViewModel` are updated. It doesn’t matter if the data is being observed or not. No NPEs happen when trying to update the nonexistent `View`.
+* `ViewModel`s don’t reference views so there’s less risk of memory leaks.
 
 ```
 private void subscribeToModel() {
@@ -133,51 +133,52 @@ It’s a good idea to have a data layer in your app, completely unaware of your 
 
 #### View references in ViewModels
 
-Avoid references to Views in ViewModels.
+Avoid references to View-layer in `ViewModel`s.
 
-ViewModels have different scopes than activities or fragments. While a ViewModel is alive and running, an activity can be in any of its [lifecycle states](https://developer.android.com/guide/components/activities/activity-lifecycle.html). Activities and fragments can be destroyed and created again while the ViewModel is unaware.
+**ViewModels have different scopes than activities or fragments**. While a `ViewModel` is alive and running, an activity can be in any of its [lifecycle states](https://developer.android.com/guide/components/activities/activity-lifecycle.html). Activities and fragments can be destroyed or re-created while the `ViewModel` is unaware.
 
 ![ViewModels persist configuration changes](/resources/viewmodel_scope.png)
 
-Passing a reference of the View (activity or fragment) to the ViewModel is a serious risk. Let’s assume the ViewModel requests data from the network and the data comes back some time later. At that moment, the View reference might be destroyed or might be an old activity that is no longer visible, generating a memory leak and, possibly, a crash.
+Passing a reference of the View (activity or fragment) to the `ViewModel` is a serious risk. Let’s assume the `ViewModel` requests data from the network and the data comes back some time later. At that moment, the View reference might be destroyed or might be an old activity that is no longer visible, generating a **memory leak** and, possibly, a crash.
 
-The recommended way to communicate between ViewModels and Views is the observer pattern (said above), using LiveData or observables from other libraries (RxJava,..).
+The recommended way to communicate between `ViewModel`s and View-layer is the observer pattern (said above), using `LiveData` or observables from other libraries (`RxJava`,..).
 
 
 #### Leaking ViewModels
 
-Consider edge cases, leaks and how long-running operations can affect the instances in your architecture.
+Consider edge cases, mem leaks and how long-running operations can affect the instances in your architecture.
 
-The reactive paradigm works well in Android because it allows for a convenient connection between UI and the rest of the layers of your app. LiveData is the key component of this structure so normally your activities and fragments will observe LiveData instances.
+The reactive paradigm works well in Android because it allows for a convenient connection between UI and the rest of the layers of your app. `LiveData` is the key component of this structure so normally your activities and fragments will observe `LiveData` instances.
 
-How ViewModels communicate with other components is up to you, but watch out for leaks and edge cases. Consider this diagram where the Presentation layer is using the observer pattern and the Data Layer is using callbacks:
+Consider this diagram where the Presentation-layer is using the observer pattern and the Data-Layer is using callbacks:
 
 ![Observer pattern in the UI and callbacks in the data layer](/resources/leaking_viewmodel.png)
 
-If the user exits the app, the View will be gone so the ViewModel is not observed anymore. If the repository is a singleton or otherwise scoped to the application, **the repository will not be destroyed until the process is killed**. This will only happen when the system needs resources or the user manually kills the app. If the repository is holding a reference to a callback in the ViewModel, the ViewModel will be temporarily leaked
+If the user exits the app, the View-layer will be gone so the `ViewModel` is not observed anymore. **If the repository is a singleton or otherwise scoped to the application, the repository will not be destroyed until the process is killed**. (only when system needs resources or the user force stop the app). Now if the **repository is holding a reference to a callback in the ViewModel, the ViewModel will be temporarily leaked**.
 
 ![The activity is finished but the ViewModel is still around](/resources/leaking_viewmodel_1.png)
 
-This leak is not a big deal if the ViewModel is light or the operation is guaranteed to finish quickly. However, this is not always the case. Ideally, ViewModels should be free to go whenever they don’t have any Views observing them:
+This leak is not a big deal if the `ViewModel` is light or the operation is guaranteed to finish quickly. However, this is not always the case. Ideally, **ViewModels should be free to go whenever they don’t have any Views observing them**:
 
 ![The activity is finished and the ViewModel is cleared](/resources/leaking_viewmodel_2.png)
 
 You have many options to achieve this:
 
-* With `ViewModel.onCleared()` you can tell the repository to drop the callback to the ViewModel.
+* With `ViewModel.onCleared()` you can tell the repository to drop the callback to the `ViewModel`.
 * In the repository you can use a `WeakReference` or you can use an `Event Bus` (both easy to misuse and even considered harmful).
-* Use the LiveData to communicate between the Repository and ViewModel in a similar way to using LiveData between the View and the ViewModel.
+* Use the `LiveData` in the Repository to communicate with `ViewModel` (see section below).
 
-Don’t put logic in the ViewModel that is critical to saving clean state or related to data. Any call you make from a ViewModel can be the last one.
+Don’t put logic in the ViewModel that is critical to saving clean state or related to data. Because any call you make from a `ViewModel` can be the last one.
 
 
 #### LiveData in repository
 
-To avoid leaking ViewModels and callback hell, repositories can be observed
+To avoid leaking `ViewModel`s and callback hell, repositories can be observed. We can use the `LiveData` to communicate between the Repository and `ViewModel` in a similar way to using `LiveData` between the View and the `ViewModel`.
+
 
 ![LiveData in repository](/resources/livedata_repository.png)
 
-When the ViewModel is cleared or when the lifecycle of the view is finished, the subscription is cleared:
+When the `ViewModel` is cleared or when the lifecycle of the view is finished, the subscription is cleared:
 
 ![LiveData in repository](/resources/livedata_repository_1.png)
 
