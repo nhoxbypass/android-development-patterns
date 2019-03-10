@@ -1,6 +1,12 @@
 # When You Should Use Null in Kotlin
 
-"Null has got a bad rap".  Yes, it’s to be avoided in most code, but **in Kotlin, null is still a part of the type system and the compiler will tell you when you haven’t handled it appropriately**. There are some perfectly appropriate safe uses of null in Kotlin.
+"Null has got a bad rap".  This realization of the danger of the null reference had dawned on the industry way before its inventor, Tony Hoare, had admitted in 2009 that null reference was his [“Billion Dollar Mistake”](https://www.infoq.com/presentations/Null-References-The-Billion-Dollar-Mistake-Tony-Hoare).
+
+People do these kind of mistakes all the time when programming in Java. It turns out that most of the time our API functions are **not supposed and are not expected by other developers to return null**. In corner cases, like the absence of data, it is a convention to return some "placeholder object” (empty collection, un-filled data object,..).
+
+So when null does appear as a result of a function in some special case (performance optimization, uninitialized reference field,..) it often **catches other code off-guard, unprepared to deal with it**. Not only it is rare to be having to deal with nulls, but the code you have to write is long and verbose.
+
+So yes, it’s to be avoided in most code, but the truth is that **the concept of null is not mistake, but Java’s type-system - which considers null to be a member of every type - is**. However, in more type-safe languages - like Kotlin - fixed this flaw by **incorporating the concept of null into the type system and and the compiler will tell you when you haven’t handled it appropriately**. So there are still some perfectly appropriate safe uses of null in Kotlin.
 
 
 ## Valid usages of null in Kotlin
