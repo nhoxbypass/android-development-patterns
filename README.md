@@ -74,6 +74,7 @@ A collection of videos focused entirely on helping developers write faster, more
 Write better Android apps faster with Kotlin - a modern statically typed language - and boost your productivity, increase your developer happiness. 
 
 * [Difference between Kotlin and Java in Android](cates/kotlin/kotlin_note.md#difference-between-kotlin-and-java-in-android)
+* [When should use Null in Kotlin](cates/kotlin/kotlin_note.md#when-should-use-null-in-kotlin)
 
 
 ### Terminology
