@@ -69,6 +69,13 @@ A collection of videos focused entirely on helping developers write faster, more
 * [Season 05](cates/performance_patterns/performance_patterns.md#season-05)
 
 
+### Testing
+
+Testing your app is an integral part of the app development process. By running tests against your app consistently, you can verify your app's correctness, functional behavior, and usability before you release it publicly.
+
+
+
+
 ### Kotlin notes
 
 Write better Android apps faster with Kotlin - a modern statically typed language - and boost your productivity, increase your developer happiness. 
