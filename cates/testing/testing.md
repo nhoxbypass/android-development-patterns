@@ -15,6 +15,7 @@ Testing also provides you with the following advantages:
 * [Testing Pyramid](testing_fundamentals.md#testing-pyramid)
 * [Threads in tests](testing_fundamentals.md#threads-in-tests)
 * [Write small tests](testing_fundamentals.md#write-small-tests)
+* [Instrumented tests](testing_fundamentals.md#instrumented-tests)
 * [Write medium tests](testing_fundamentals.md#write-menidum-tests)
 * [Write large tests](testing_fundamentals.md#write-large-tests)
 * [Create more readable assertions](testing_fundamentals.md#create-more-readable-assertions)

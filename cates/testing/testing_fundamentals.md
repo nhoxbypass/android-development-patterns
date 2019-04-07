@@ -40,6 +40,16 @@ If you need a test to execute on the main thread, annotate it using `@UiThreadTe
 
 As you add and change your code, make sure that these features behave as intended by creating and running unit tests against them. Although it's possible to evaluate units on a device or emulator, it's usually quicker and easier to test the units in your development environment, adding stubbed or mocked methods as needed to interact with the Android system.
 
+
+#### Local unit tests
+
+Located at `module-name/src/test/java/`.
+
+These are tests that run on your machine's local Java Virtual Machine (JVM). Use these tests to minimize execution time when your tests have no Android framework dependencies or when you can mock the Android framework dependencies.
+
+At runtime, these tests are executed against a modified version of android.jar where all final modifiers have been stripped off. This lets you use popular mocking libraries, like Mockito.
+
+
 #### Robolectric
 
 If your app's testing environment requires unit tests to interact more extensively with the Android framework, you can use [Robolectric](http://robolectric.org/). This tool executes real Android framework code and fakes of native framework code on your local JVM. 
@@ -61,9 +71,15 @@ You can control and verify the elements of the Android framework with which your
 If your code contains references to resources or complex interactions with the Android framework, you should use a different form of unit testing instead, such as Robolectric.
 
 
-#### Instrumented unit tests
+## Instrumented tests
 
-You can also run instrumented unit tests on a physical device or emulator, which doesn't involve any mocking or stubbing of the framework. Because this form of testing involves significantly **slower execution times than local unit tests**, however, it's best to rely on this method only when you want to evaluate your app's behavior against actual device hardware (to find device-related bugs).
+Located at `module-name/src/androidTest/java/`.
+
+These are tests that run on a hardware device or emulator. These tests have access to Instrumentation APIs, give you access to information such as the Context of the app you are testing, and let you control the app under test from your test code. Use these tests when writing integration and functional UI tests to automate user interaction, or when your tests have Android dependencies that mocking or stubbing objects cannot satisfy.
+
+Note:
+
+You can also run instrumented unit tests on a physical device or emulator. But this is significantly **slower execution times than local unit tests**. So, it's best to rely on this method ONLY when you want to evaluate your app's behavior against actual device hardware (to find device-related bugs).
 
 
 ## Write medium tests
