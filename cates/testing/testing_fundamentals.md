@@ -4,7 +4,7 @@
 
 When developing a feature iteratively, you start by either writing a new test or by adding cases and assertions to an existing unit test. The test fails at first because the feature isn't implemented yet.
 
-For each unit, you write a corresponding unit test. Your unit tests should nearly exhaust all possible interactions with the unit, including standard interactions, invalid inputs, and cases where resources aren't available.
+For each unit, you write a corresponding unit test. Your unit tests should nearly cover all possible interactions with this unit, including standard interactions, invalid inputs, or cases where resources aren't available.
 
 This workflow called [Test-Driven Development (TDD)](https://www.youtube.com/watch?v=pK7W5npkhho&start=111).
 
@@ -13,17 +13,15 @@ This workflow called [Test-Driven Development (TDD)](https://www.youtube.com/wat
 
 ## Testing Pyramid
 
-The Testing Pyramid, illustrates how your app should include the three categories of tests: small, medium, and large:
+The Testing Pyramid, illustrates how your app should include the three categories of tests: **small, medium, and large**:
 
-* Small tests: unit tests that you can run in isolation from production systems. They typically mock every major component and should run quickly on your machine.
-* Medium tests: integration tests that sit in between small tests and large tests. They integrate several components, and they run on emulators or real devices.
-* Large tests: integration and UI tests that run by completing a UI workflow. They ensure that key end-user tasks work as expected on emulators or real devices.
+* **Small tests**: unit tests that you can run in isolation from production app. They typically mock every major component and should run quickly on your development machine.
+* **Medium tests**: integration tests that sit in between small tests and large tests. They integrate several components, and they run on emulators or real devices.
+* **Large tests**: integration and UI tests that run by completing a UI workflow. They ensure that key end-user tasks work as expected on emulators or real devices.
 
 ![Testing Pyramid](/resources/pyramid_2x.png)
 
-Small tests are fast and focused, allowing you to address failures quickly, but they're also low-fidelity and self-contained, making it difficult to have confidence that a passing test allows your app to work.
-
-Because of the different characteristics of each test category, you should include tests from each layer of the test pyramid with following split among the categories: **70 percent small, 20 percent medium, and 10 percent large**.
+You should include tests from each layer of the test pyramid with following split among the categories: **70 percent small, 20 percent medium, and 10 percent large**.
 
 
 ## Threads in tests
@@ -38,16 +36,18 @@ If you need a test to execute on the main thread, annotate it using `@UiThreadTe
 
 ## Write small tests
 
-As you add and change your code, make sure that these features behave as intended by creating and running unit tests against them. Although it's possible to evaluate units on a device or emulator, it's usually quicker and easier to test the units in your development environment, adding stubbed or mocked methods as needed to interact with the Android system.
+As you add and change your code, make sure that these features behave as intended by creating & running unit tests against them. Although it's possible to evaluate units on a device or emulator, it's usually quicker and easier to test the units in your development machine, adding stubbed or mocked methods as needed to interact with the Android system.
+
+Small tests are fast and focused, allowing you to **address failures quickly**, but they're also low-fidelity and self-contained, making it **difficult to have confidence that a passing test allows your app to work properly**.
 
 
 #### Local unit tests
 
 Located at `module-name/src/test/java/`.
 
-These are tests that run on your machine's local Java Virtual Machine (JVM). Use these tests to minimize execution time when your tests have no Android framework dependencies or when you can mock the Android framework dependencies.
+These are tests that run on your machine's local Java Virtual Machine (JVM). Use these tests to **minimize execution time** when your tests have no Android framework dependencies or when you can mock the Android framework dependencies.
 
-At runtime, these tests are executed against a modified version of android.jar where all final modifiers have been stripped off. This lets you use popular mocking libraries, like Mockito.
+At runtime, these tests are executed against a modified version of `android.jar` where all `final` modifiers have been stripped off. This lets you use mocking libraries (like `Mockito`,..).
 
 
 #### Robolectric
@@ -66,7 +66,7 @@ Robolectric tests nearly match the full fidelity of running tests on an Android 
 
 #### Interact with the Android environment
 
-You can control and verify the elements of the Android framework with which your app interacts by running unit tests against a modified version of `android.jar`, which doesn't contain any code. You need to stub out every one of these interactions by using a mocking framework, such as [Mockito](https://site.mockito.org/).
+You can control and verify the elements of the Android framework with which your app interacts by running unit tests against a modified `android.jar`, which doesn't contain any code. You need to stub out every one of these method by using a mocking framework, such as [Mockito](https://site.mockito.org/).
 
 If your code contains references to resources or complex interactions with the Android framework, you should use a different form of unit testing instead, such as Robolectric.
 
@@ -77,21 +77,19 @@ Located at `module-name/src/androidTest/java/`.
 
 These are tests that run on a hardware device or emulator. These tests have access to Instrumentation APIs, give you access to information such as the Context of the app you are testing, and let you control the app under test from your test code. Use these tests when writing integration and functional UI tests to automate user interaction, or when your tests have Android dependencies that mocking or stubbing objects cannot satisfy.
 
-Note:
-
-You can also run instrumented unit tests on a physical device or emulator. But this is significantly **slower execution times than local unit tests**. So, it's best to rely on this method ONLY when you want to evaluate your app's behavior against actual device hardware (to find device-related bugs).
+**Note**: You can also run instrumented unit tests on a physical device or emulator. But this is significantly **slower execution times than local unit tests**. So, it's best to rely on this method ONLY when you want to evaluate your app's behavior against actual device hardware (to find device-related bugs).
 
 
 ## Write medium tests
 
-Medium tests allow you to verify that the components behave properly with other components when run on an emulator or device. These tests are particularly important to create and run if some of your app's components depend on physical hardware.
+Medium tests allow you to **verify that the components behave properly with other components when run on an emulator or device**. These tests are particularly important to create and run if some of your app's components depend on physical hardware.
 
-Medium tests evaluate how your app coordinates multiple units, but they don't test the full app. Examples of medium tests include service tests, integration tests, and hermetic UI tests that simulate the behavior of external dependencies.
+Medium tests **evaluate how your app coordinates multiple units, but they don't test the full app**. Examples of medium tests include service tests, integration tests, and hermetic UI tests that simulate the behavior of external dependencies.
 
 
 ## Write large tests
 
-Although it's important to test each layer and feature within your app in isolation, it's just as important to test common workflows and use cases that involve the complete stack, from the UI through business logic to the data layer.
+Although it's important to test each layer and feature within your app in isolation, it's just as important to **test common workflows and use cases that involve the complete stack, from the UI through business logic to the data layer**.
 
 If your app is small enough, you might need only one suite of large tests to evaluate your app's functionality as a whole. Otherwise, you should divide your large test suites by team ownership, functional verticals, or user goals.
 
