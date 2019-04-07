@@ -73,7 +73,8 @@ A collection of videos focused entirely on helping developers write faster, more
 
 Testing your app is an integral part of the app development process. By running tests against your app consistently, you can verify your app's correctness, functional behavior, and usability before you release it publicly.
 
-
+* [Fundamentals of Testing](cates/testing/testing.md#fundamentals-of-testing)
+* [JUnit4 rules with AndroidX Test](cates/testing/testing.md#junit4-rules-with-androidx-test)
 
 
 ### Kotlin notes
