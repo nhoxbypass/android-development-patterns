@@ -27,3 +27,9 @@ AndroidX Test includes a set of JUnit rules to be used with the `AndroidJUnitRun
 
 * [ActivityTestRule](junit_rules_with_androidx_test.md#activitytestrule)
 
+
+## Testing terminology
+
+* [Test coverage](terminology.md#test-coverage)
+* [Test Driven Development (TDD)](terminology.md#test-driven-development-tdd)
+* [Test Doubles](terminology.md#test-doubles)

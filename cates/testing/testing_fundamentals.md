@@ -13,11 +13,19 @@ This workflow called [Test-Driven Development (TDD)](https://www.youtube.com/wat
 
 ## Testing Pyramid
 
-The Testing Pyramid, illustrates how your app should include the three categories of tests: **small, medium, and large**:
+There are three attributes that are important to consider for testing:
 
-* **Small tests**: unit tests that you can run in isolation from production app. They typically mock every major component and should run quickly on your development machine.
+* **Scope**: How much of the code does the test touch? Tests can run on a single method, across the entire app, or somewhere in between.
+* **Speed**: How fast does the test run? Test speeds can vary from milli-second to several minutes.
+* **Fidelity**: - How "real-world" is the test? For example, if part of the code you're testing needs to make a network request, does the test code actually make this network request or does it fake the result? If the test actually talks with the network, this means it has higher fidelity, but also takes longer and could give flaky results if the network is occasionally down.
+
+Speed and fidelity are a trade off - the faster the test, generally the less fidelity and vice versa.
+
+Using these attributes, you can break tests down into three categories: **small, medium, and large**:
+
+* **Small tests**: unit tests that you can run in isolation from production app. They typically mock every major component and should run quickly on your development machine. These are highly focused tests that run on a single class, usually a single method.
 * **Medium tests**: integration tests that sit in between small tests and large tests. They integrate several components, and they run on emulators or real devices.
-* **Large tests**: integration and UI tests that run by completing a UI workflow. They ensure that key end-user tasks work as expected on emulators or real devices.
+* **Large tests**: end-to-end integration and UI tests that run by completing a UI workflow. They ensure that end-user tasks work as expected on emulators or real devices.
 
 ![Testing Pyramid](/resources/pyramid_2x.png)
 
@@ -38,7 +46,7 @@ If you need a test to execute on the main thread, annotate it using `@UiThreadTe
 
 As you add and change your code, make sure that these features behave as intended by creating & running unit tests against them. Although it's possible to evaluate units on a device or emulator, it's usually quicker and easier to test the units in your development machine, adding stubbed or mocked methods as needed to interact with the Android system.
 
-Small tests are fast and focused, allowing you to **address failures quickly**, but they're also low-fidelity and self-contained, making it **difficult to have confidence that a passing test allows your app to work properly**.
+Small tests are fast and focused, allowing you to **address failures quickly** (If a unit test fails, you should know exactly where in your code the issue is). But they're also low-fidelity and self-contained, making it **difficult to have confidence that a passing test allows your app to work properly**.
 
 
 #### Local unit tests
