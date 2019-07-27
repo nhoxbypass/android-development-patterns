@@ -68,6 +68,12 @@ A collection of videos focused entirely on helping developers write faster, more
 * [Season 04](cates/performance_patterns/performance_patterns.md#season-04)
 * [Season 05](cates/performance_patterns/performance_patterns.md#season-05)
 
+### Android Jetpack
+
+Jetpack is a suite of libraries, tools, and guidance to help developers write high-quality apps easier. These components help you follow best practices, free you from writing boilerplate code, and simplify complex tasks, so you can focus on the code you care about.
+
+* [Android Architecture Components](cates/jetpack/android_jetpack.md#android-architecture-components)
+
 
 ### Testing
 

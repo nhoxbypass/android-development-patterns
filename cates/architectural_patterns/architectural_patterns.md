@@ -7,6 +7,5 @@ An architectural pattern is a general, reusable solution to a commonly occurring
 
 * [Mobile app user experiences](app_architecture.md#mobile-app-user-experiences)
 * [Common architectural principles](app_architecture.md#common-architectural-principles)
-* [Android Architecture Components](app_architecture.md#android-architecture-components)
 * [Recommended app architecture](app_architecture.md#recommended-app-architecture)
 * [Best practices](app_architecture.md#best-practices)
