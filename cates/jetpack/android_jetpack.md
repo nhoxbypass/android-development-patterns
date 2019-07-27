@@ -7,3 +7,7 @@ Jetpack is a suite of libraries, tools, and guidance to help developers write hi
 * [ViewModel](architecture_component.md#viewmodel)
 * [LiveData](architecture_component.md#livedata)
 * [Room](architecture_component.md#room)
+
+## WorkManager
+
+* [Testing your workers](workmanager.md#testing-your-workers)
