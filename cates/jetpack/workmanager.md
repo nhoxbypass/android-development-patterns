@@ -27,7 +27,7 @@ You can specify a 24 hours period, but because the work is executed **respecting
 
 A task is defined using the [Worker](https://developer.android.com/reference/androidx/work/Worker) class. The `doWork()` (or `createWork()`) method is run synchronously on a background thread provided by WorkManager.
 
-To create your background work, extend the `Worker` class and override the `doWork()` method.
+To create your background work, extend the `Worker` class and override the `doWork()` method. You can also extends prebuilt `RxWorker` or `CouroutineWorker`.
 
 ```
 class UploadWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
@@ -46,7 +46,7 @@ To informs WorkManager whether the task needs to be retried at a later time, ret
 
 #### Configure how and when to run the task
 
-While a `Worker` defines the unit of work, a `WorkRequest` defines **how and when work should be run**. 
+While a `Worker` defines the unit of work, a [WorkRequest](https://developer.android.com/reference/androidx/work/WorkRequest) defines **how and when work should be run**. 
 
 Tasks may be one-off or periodic. For one-off work requests, use `OneTimeWorkRequest` and for periodic work `PeriodicTimeWorkRequest`.
 
@@ -87,7 +87,7 @@ As your work goes through its lifetime, it goes through various States.
 * `FAILED`: A worker that returned `Result.failure()`. This is also a terminal state; only `OneTimeWorkRequest`s may enter this state. All dependent work will also be marked as `FAILED` and will not run.
 * `CANCELLED`: When you explicitly cancel a work request that hasn't already terminated. All dependent work will also be marked as CANCELLED and will not run.
 
-If you need to check on the task status, you can get a `WorkInfo` object which includes the id of the work, its tags, its current `State`, and any output data.
+If you need to check on the task status, you can get a [WorkInfo](https://developer.android.com/reference/androidx/work/WorkInfo) object which includes the id of the work, its tags, its current [State](https://developer.android.com/reference/androidx/work/WorkInfo.State.html), and any output data.
 
 ```
 WorkManager.getInstance().getWorkInfoByIdLiveData(uploadWorkRequest.id)
@@ -102,7 +102,7 @@ WorkManager.getInstance().getWorkInfoByIdLiveData(uploadWorkRequest.id)
 
 Your app might need to run several tasks in a particular order. WorkManager allows you to create and enqueue a work sequence that specifies multiple tasks, and what order they should run in.
 
-To create a chain of work, you can use `WorkManager.beginWith()` which return an instance of `WorkContinuation`. It can then be used to add dependent `OneTimeWorkRequest`s using `WorkContinuation.then()`.
+To create a chain of work, you can use `WorkManager.beginWith()` which return an instance of [WorkContinuation](https://developer.android.com/reference/androidx/work/WorkContinuation). It can then be used to add dependent `OneTimeWorkRequest`s using `WorkContinuation.then()`.
 
 ```
 WorkManager.getInstance()
