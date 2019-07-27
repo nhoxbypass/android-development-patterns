@@ -2,6 +2,137 @@
 
 The **WorkManager API** makes it easy to schedule deferrable, asynchronous tasks that are expected to run even if the app exits or device restarts.
 
+
+## Overview
+
+Key features:
+
+* Backwards compatible up to API 14. Uses `JobScheduler` on devices with API 23+. Uses a combination of `BroadcastReceiver` + `AlarmManager` on devices with API 14-22
+* Add work constraints like network availability or charging status
+* Chain tasks together
+* Ensures task execution, even if the app or device restarts
+* Adheres to power-saving features like Doze mode
+
+WorkManager is intended for tasks that are deferrable—that is, not required to run immediately—and required to run reliably even if the app exits or the device restarts. For example:
+
+* Sending logs or analytics to backend services
+* Periodically syncing application data with a server
+
+You can specify a 24 hours period, but because the work is executed **respecting Android’s battery optimization strategies**, you can only expect your worker to be executed around that time. You can then have an execution at 5:00AM the first day, 5:25AM the second day, 5:15AM the third, then 5:30AM the following one and so on.
+
+
+## Create and execute background work
+
+#### Creating background works
+
+A task is defined using the [Worker](https://developer.android.com/reference/androidx/work/Worker) class. The `doWork()` (or `createWork()`) method is run synchronously on a background thread provided by WorkManager.
+
+To create your background work, extend the `Worker` class and override the `doWork()` method.
+
+```
+class UploadWorker(appContext: Context, workerParams: WorkerParameters) : Worker(appContext, workerParams) {
+    override fun doWork(): Result {
+        // Do the work here. Ex: upload the images.
+
+        uploadImages()
+
+        // Indicate whether the task finished successfully with the Result
+        return Result.success()
+    }
+}
+```
+
+To informs WorkManager whether the task needs to be retried at a later time, return `Result.retry()`
+
+#### Configure how and when to run the task
+
+While a `Worker` defines the unit of work, a `WorkRequest` defines **how and when work should be run**. 
+
+Tasks may be one-off or periodic. For one-off work requests, use `OneTimeWorkRequest` and for periodic work `PeriodicTimeWorkRequest`.
+
+```
+val oneTimeWorkRequest = OneTimeWorkRequestBuilder<UploadWorker>()
+        .build()
+
+val periodicWorkRequest = PeriodicWorkRequestBuilder<UploadWorker>(15, MINUTES)
+        .build()
+```
+
+Or you can customize work requests to handle common use cases:
+
+* Provide device's conditions (network availabilty, charging,..) to work to indicate when it can run, using `Constraints`
+* Guarantee a minimum delay in task execution
+* Handle task retries and back-off
+* Group tasks with tagging
+
+#### Hand off your task to the system
+
+Once you have defined your work request, you can now schedule it with `WorkManager#enqueue()` method.
+
+```
+WorkManager.getInstance().enqueue(uploadWorkRequest)
+```
+
+The exact time that the worker is going to be executed **depends on the constraints that are used in your work request and system optimizations (like Doze mode)**. WorkManager is designed to give the best possible behavior under these restrictions.
+
+
+## Observing status of Work
+
+As your work goes through its lifetime, it goes through various States.
+
+* `BLOCKED`: if it has prerequisite work that hasn't finished yet.
+* `ENQUEUED`: Work that is eligible to run as soon as its constraints and timing are met.
+* `RUNNING`: When a worker is actively being executed.
+* `SUCCEEDED`: A worker that has returned `Result.success()`. This is a terminal state; only `OneTimeWorkRequest`s may enter this state.
+* `FAILED`: A worker that returned `Result.failure()`. This is also a terminal state; only `OneTimeWorkRequest`s may enter this state. All dependent work will also be marked as `FAILED` and will not run.
+* `CANCELLED`: When you explicitly cancel a work request that hasn't already terminated. All dependent work will also be marked as CANCELLED and will not run.
+
+If you need to check on the task status, you can get a `WorkInfo` object which includes the id of the work, its tags, its current `State`, and any output data.
+
+```
+WorkManager.getInstance().getWorkInfoByIdLiveData(uploadWorkRequest.id)
+        .observe(lifecycleOwner, Observer { workInfo ->
+            if (workInfo != null && workInfo.state == WorkInfo.State.SUCCEEDED) {
+                displayMessage("Work finished!")
+            }
+        })
+```
+
+## Chaining Work together
+
+Your app might need to run several tasks in a particular order. WorkManager allows you to create and enqueue a work sequence that specifies multiple tasks, and what order they should run in.
+
+To create a chain of work, you can use `WorkManager.beginWith()` which return an instance of `WorkContinuation`. It can then be used to add dependent `OneTimeWorkRequest`s using `WorkContinuation.then()`.
+
+```
+WorkManager.getInstance()
+    .beginWith(workA)
+    .then(workB)    // then() returns a new WorkContinuation instance
+    .then(workC)
+    .enqueue();
+```
+
+If any task returns `Worker.WorkerResult.FAILURE`, the whole sequence ends.
+
+
+## Canceling a Work
+
+You can cancel a task after you enqueue it. To cancel the task, you need its work ID.
+
+```
+WorkManager.cancelWorkById(workRequest.id)
+```
+
+
+## Unique work sequences
+
+We know that WorkManager guarantees the execution of your work even if your application is closed or the device is restarted. So, **enqueueing your worker at each start of your application can cause to add a new WorkRequest each time**. If you’re using a `OneTimeWorkRequest`, it’s probably not a big deal. But for periodic Work, **you can easily end up with multiple periodic work request being enqueued**.
+
+Unique work is a concept that **guarantees that you only have one chain of work with a particular name at a time**.
+
+You can enqueue your work request as a unique work by calling `WorkManager.enqueueUniqueWork()` or `WorkManager.enqueueUniquePeriodicWork()`. Or with chaining works, create the sequence with a call to `beginUniqueWork()` instead of `beginWith()`.
+
+
 ## Testing your workers
 
 WorkManager provides a [work-testing](https://developer.android.com/jetpack/androidx/releases/work#declaring_dependencies) artifact which helps with unit testing of your workers for **Android Instrumentation tests**.
@@ -94,7 +225,7 @@ But, if you need to test a `CoroutineWorker`, `RxWorker` or `ListenableWorker`, 
 
 #### TestWorkerBuilder and TestListenableWorkerBuilder
 
-To make testing these classes more straightforward, WorkManager `v2.1` includes a set of new `WorkRequest` builder:
+To make testing these classes more straightforward, WorkManager `v2.1` includes a set of new WorkRequest builder:
 
 * `TestWorkerBuilder` to invoke directly a `Worker` class
 * `TestListenableWorkerBuilder` to invoke directly a `ListenableWorker` (`RxWorker` or `CoroutineWorker`)

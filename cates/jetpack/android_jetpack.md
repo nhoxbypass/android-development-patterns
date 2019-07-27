@@ -10,4 +10,10 @@ Jetpack is a suite of libraries, tools, and guidance to help developers write hi
 
 ## WorkManager
 
+* [Overview](workmanager.md#overview)
+* [Create and execute background work](workmanager.md#create-and-execute-background-work)
+* [Observing status of Work](workmanager.md#observing-status-of-work)
+* [Chaining Work together](workmanager.md#chaining-work-together)
+* [Canceling a Work](workmanager.md#canceling-a-work)
+* [Unique work sequences](workmanager.md#unique-work-sequences)
 * [Testing your workers](workmanager.md#testing-your-workers)
