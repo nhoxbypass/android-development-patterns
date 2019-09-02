@@ -2,6 +2,10 @@
 
 Testing your app is an integral part of the app development process. By running tests against your app consistently, you can verify your app's correctness, functional behavior, and usability before you release it publicly.
 
+I’ve come to love testing so much that I feel uncomfortable writing code in a codebase without tests. If your entire application does one thing (like school projects), then testing manually is still okay. But what happens when there are 100 different things the application does? 
+
+**Think testing as documentation. It’s documentation for my assumptions about the code. Tests tell me how I (or the person before me) expect the code to work, and where all they expect things to go wrong.**
+
 Testing also provides you with the following advantages:
 
 * Rapid feedback on failures.
