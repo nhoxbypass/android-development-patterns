@@ -1,15 +1,13 @@
 # Guide to app architecture
 
 
-## Mobile app user experiences
+## Mobile app architecture
 
 In the majority of cases, desktop apps have a single entry point from a desktop or program launcher, then run as a single, monolithic process. Android apps, on the other hand, have a much more complex structure.
 
 You declare most of these app components in app manifest. The Android OS then uses this file to decide how to integrate your app into the device's overall UX.
 
-Keep in mind that mobile devices are also resource-constrained, so at any time, the operating system (OS) might kill some app processes to make room for new ones.
-
-Given the conditions of this environment, it's possible for your app components to be launched individually and out-of-order, and the OS or user can destroy them at any time. Because these events aren't under your control, you shouldn't store any app data or state in your app components, and your app components shouldn't depend on each other.
+Keep in mind that mobile devices are also **resource-constrained**, so at any time, the operating system (OS) might kill some app processes to make room for new ones. Because these events aren't under your control, you shouldn't store any app data or state in your app components, and your app components shouldn't depend on each other.
 
 
 ## Common architectural principles
@@ -18,20 +16,63 @@ If you shouldn't use app components to store app data and state, how should you 
 
 #### Separation of concerns
 
-The most important principle to follow is [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns). It's a common mistake to write all your code in an `Activity` or a `Fragment`. These UI-based classes **should only contain logic that handles UI and device interactions**. By keeping these classes as lean as possible, you can avoid many lifecycle-related problems.
+The most important principle to follow is [separation of concerns](https://en.wikipedia.org/wiki/Separation_of_concerns). It's a common **mistake** to write all your code in an `Activity` or a `Fragment`. **These UI-based classes should only contain logic that handles UI and device interactions**. By keeping these classes as lean as possible, you can avoid many lifecycle-related problems.
 
 Keep in mind that you don't own implementations of `Activity` and `Fragment`, rather, these are just glue classes that represent the contract between the Android OS and your app. The OS can destroy them at any time based on user interactions or because of system conditions like low memory. To provide a satisfactory UX and a more manageable app maintenance experience, it's best to **minimize your dependency on them**.
 
 
-#### Drive UI from a model
+#### Update UI base on Model
 
-You should **change your UI base on state of a model**, preferably a persistent model. Models are components that are responsible for handling the data for an app. They're independent from the `View` and app components, so they're unaffected by the app's lifecycle and the associated concerns.
+You should **change your UI base on state of a model**, preferably a persistent model. Models are components that are responsible for handling the data for an app. They're independent from the `View` and app components, so they're **unaffected by the app's lifecycle and the associated concerns**.
 
 Persistence is ideal for the following reasons:
 * Your users don't lose data if the Android OS destroys your app to free up resources.
 * Your app continues to work in cases when a network connection is flaky or not available. User can still browse that content while they are offline, any user-initiated content changes are then synced to the server after the device is back online
 
 By basing your app on model classes with the well-defined responsibility of managing the data, your app is more testable and consistent.
+
+
+## Using data repository
+
+Repository modules handle data operations. The Repository pattern **adds an abstraction layer over the top of data access, to provide a clean & centralising API so that the rest of the app can retrieve this data easily**. They know where to get the data from and what API calls to make when data is updated.
+
+![Repository Pattern](/resources/repository_pattern.png)
+
+**Even though the repository module looks unnecessary, it serves an important purpose: it abstracts the data sources from the rest of the app**. 
+
+You can consider repositories to be mediators between different data sources:
+* Remote: RestAPI or cloud services (Firebase, AWS,..).
+* Local: database or file.
+* In-memory cache.
+
+It’s a good idea to have a data layer in your app, completely unaware of your presentation layer. Algorithms to keep cache and database in sync with the network are not trivial. Having a separate repository class as the single-point entry to your data.
+
+
+#### Cache data in memory
+
+The repository implementation abstracts the call to the "API helper" object, but because it relies on only one data source, it's not very flexible. After it fetches data from our API server, it doesn't store that data anywhere. Therefore, if the user home app, then returns, our app must re-fetch the data from server, even if it hasn't changed. This will wastes valuable network bandwidth and forces user to wait for the new query to complete.
+
+So we need to add a new data source in our Reposistory to cache these value, or just use a `Map<>` to cache it. When the UI needs data, we check the cache first, it it's not exist --> query to server to fetch data.
+
+
+#### Persist data in database
+
+After added memory cache, if the user rotates the device or leaves and immediately returns to the app, the existing UI becomes visible instantly because the repository retrieves data from our in-memory cache.
+
+However, what happens if the user leaves the app and comes back hours later, after the Android OS has killed the process? We need to fetch the data again from the network. This re-fetching process isn't just a bad UX; it's also wasteful because it consumes valuable mobile data.
+
+You could fix this by caching the web requests, but that create new problem: What happens if the same user data shows up from another type of request, such as fetching a list of friends? The app would show inconsistent data. Our app would need to figure out how to merge this inconsistent data.
+
+The proper way to handle this situation is to use a persistent model. This is where the [Room](https://github.com/nhoxbypass/android-development-patterns/blob/master/cates/jetpack/architecture_component.md#room) persistence library comes to the rescue.
+
+
+#### Single source of truth
+
+Instead of directly access data from model and push to the UI, **we let them observe data in the Repository and then react to data changed events later**.
+
+![Single source of truth](/resources/single_source_of_truth.jpeg)
+
+**Whenever Repository saves server API responses into the database, these changes then trigger callbacks on active "observer" objects**. Using this model, the database serves as the single source of truth, and other parts of the app access it using our Repository.
 
 
 ## Recommended app architecture
@@ -53,7 +94,7 @@ Note: It's impossible to have one way of writing apps that works best for every 
 
 Ideally, **ViewModels contain logic-only and shouldn’t know anything about Android**. This improves testability, leak safety and modularity. A general rule of thumb is to make sure there are no `android.*` imports in your `ViewModel`s (with exceptions like `android.arch.*`). 
 
-Keep the logic in `Activity` and `Fragment` to a minimum. Conditional statements, loops,.. should be done in `ViewModel`s or other layers of an app, not in activities or fragments. The View layer is usually not unit tested (unless you use `Robolectric`) so the fewer lines of code the better. Views should only know how to display data and send user events to the `ViewModel`. This is called the [Passive View pattern](https://martinfowler.com/eaaDev/PassiveScreen.html).
+Keep the logic in `Activity` and `Fragment` to a minimum. Conditional statements, loops,.. should be done in `ViewModel`s or other layers of an app. The View layer is usually **not unit tested** (unless you use `Robolectric`) so the fewer lines of code the better. Views should only know how to display data and send user events to the `ViewModel`. This is called the [Passive View pattern](https://martinfowler.com/eaaDev/PassiveScreen.html).
 
 
 #### Observer pattern with LiveData
@@ -81,22 +122,6 @@ private void subscribeToModel() {
 ```
 
 
-#### Using data repository
-
-Repository modules handle data operations. The Repository pattern **adds an abstraction layer over the top of data access, to provide a clean & centralising API so that the rest of the app can retrieve this data easily**. They know where to get the data from and what API calls to make when datxa is updated. You can consider repositories to be mediators between different data sources, such as persistent models, web services, and caches.
-
-![Repository Pattern](/resources/repository_pattern.png)
-
-**Even though the repository module looks unnecessary, it serves an important purpose: it abstracts the data sources from the rest of the app**. 
-
-You can consider repositories to be mediators between different data sources:
-* Remote: RestAPI or cloud services (Firebase, AWS,..).
-* Local: database or file.
-* In-memory cache.
-
-It’s a good idea to have a data layer in your app, completely unaware of your presentation layer. Algorithms to keep cache and database in sync with the network are not trivial. Having a separate repository class as the single-point entry to your data.
-
-
 #### View references in ViewModels
 
 Avoid references to View-layer in `ViewModel`s.
@@ -105,7 +130,7 @@ Avoid references to View-layer in `ViewModel`s.
 
 ![ViewModels persist configuration changes](/resources/viewmodel_scope.png)
 
-Passing a reference of the View (activity or fragment) to the `ViewModel` is a serious risk. Let’s assume the `ViewModel` requests data from the network and the data comes back some time later. At that moment, the View reference might be destroyed or might be an old activity that is no longer visible, generating a **memory leak** and, possibly, a crash.
+Passing a reference of the View (activity or fragment) to the `ViewModel` is a serious risk. Let’s assume the `ViewModel` requests data from the network and the data comes back some time later. At that moment, **the View reference might be destroyed or might be an old activity that is no longer visible, generating a memory leak** and, possibly, a crash.
 
 The recommended way to communicate between `ViewModel`s and View-layer is the observer pattern (said above), using `LiveData` or observables from other libraries (`RxJava`,..).
 
@@ -159,13 +184,6 @@ You can use the following design patterns to address this problem:
 It's easier to implement a service registry than use DI, so if you aren't familiar with DI, use the service locator pattern instead.
 
 These patterns allow you to scale your code because they provide clear patterns for managing dependencies without duplicating code or adding complexity. Furthermore, these patterns allow you to quickly switch between test and production data-fetching implementations.
-
-
-#### Single source of truth
-
-It's common for different REST API endpoints to return the same data. Ex: if our backend has another endpoint that returns a list of data, the same model object could come from two different API endpoints, maybe even using different levels of granularity. If your Repository were to return the response from the Webservice request as-is, without checking for consistency, our **UIs could show confusing information because the version and format of data from the Repository would depend on the endpoint**.
-
-For this reason, our Repository implementation saves web service responses into the database. Changes to the database then trigger callbacks on active LiveData objects. Using this model, **the database serves as the single source of truth**, and other parts of the app access it using our Repository. Regardless of whether you use a disk cache, we recommend that your Repository designate a data source as the single source of truth for the rest of your app.
 
 
 ## Best practices
