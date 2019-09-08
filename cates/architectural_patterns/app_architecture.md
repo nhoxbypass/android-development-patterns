@@ -83,7 +83,11 @@ private void subscribeToModel() {
 
 #### Using data repository
 
-Repository modules handle data operations. The Repository pattern **adds an abstraction layer over the top of data access, to provide a clean & centralising API so that the rest of the app can retrieve this data easily**. They know where to get the data from and what API calls to make when data is updated. 
+Repository modules handle data operations. The Repository pattern **adds an abstraction layer over the top of data access, to provide a clean & centralising API so that the rest of the app can retrieve this data easily**. They know where to get the data from and what API calls to make when datxa is updated. You can consider repositories to be mediators between different data sources, such as persistent models, web services, and caches.
+
+![Repository Pattern](/resources/repository_pattern.png)
+
+**Even though the repository module looks unnecessary, it serves an important purpose: it abstracts the data sources from the rest of the app**. 
 
 You can consider repositories to be mediators between different data sources:
 * Remote: RestAPI or cloud services (Firebase, AWS,..).
