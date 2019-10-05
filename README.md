@@ -11,6 +11,13 @@ Aim to write code that can be maintained — not only by yourself, but by anyone
 * [SOLID](cates/coding_principle/coding_principle.md#solid)
 
 
+### Coding problems
+
+Well-known problems in programming.
+
+* [The diamond problem](cates/coding_problems/coding_problems.md#the-diamond-problem)
+
+
 ### Design Patterns
 
 A design pattern is a general repeatable solution to a commonly occurring problem in software design.
