@@ -1,5 +1,7 @@
 # Guide to app architecture
 
+This guide encompasses best practices and recommended architecture for building robust, production-quality apps.
+
 
 ## Mobile app architecture
 
@@ -7,7 +9,7 @@ In the majority of cases, desktop apps have a single entry point from a desktop 
 
 You declare most of these app components in app manifest. The Android OS then uses this file to decide how to integrate your app into the device's overall UX.
 
-Keep in mind that mobile devices are also **resource-constrained**, so at any time, the operating system (OS) might kill some app processes to make room for new ones. Because these events aren't under your control, you shouldn't store any app data or state in your app components, and your app components shouldn't depend on each other.
+Keep in mind that mobile devices are also **resource-constrained**, so at any time, the operating system (OS) might kill some app processes to make room for new ones. Because these events aren't under your control, you **shouldn't store any app data or state in your app components, and your app components shouldn't depend on each other**.
 
 
 ## Common architectural principles
@@ -84,8 +86,6 @@ To start, consider the following diagram, which shows how all the modules should
 ![App architecture overview](/resources/final-architecture.png)
 
 Notice that **each component depends only on the component one level below it**. (Ex: activities and fragments depend only on a view model). **The Repository is the only class can depends on multiple other classes**. (repository can depends on persistent data model and remote backend data source,..).
-
-Note: It's impossible to have one way of writing apps that works best for every scenario. That being said, this recommended architecture is a good starting point for most situations and workflows. If you already have a good way of writing Android apps that follows the [common architectural principles](app_architecture.md#common-architecture-principles), you don't need to change it.
 
 
 #### Distributing responsibilities

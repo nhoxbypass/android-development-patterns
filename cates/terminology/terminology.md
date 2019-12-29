@@ -73,3 +73,8 @@ List of clarification about programming terms, definitions, commands, and glossa
 | Legacy/Deprecated | New |
 | Synchronize invidual operation, not the whole sequence operations | Non-sync |
 | Data growth | Data expand |
+
+
+## Type inference
+
+Type inference refers to the automatic detection of the data type of an expression in a programming language. It is a feature present in some strongly statically typed languages. 
