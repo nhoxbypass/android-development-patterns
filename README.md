@@ -105,7 +105,7 @@ Well-known problems in programming.
 
 Well-known problems in programming.
 
-* [The diamond problem](cates/coding_problems/coding_problems.md#the-diamond-problem)
+* [Secure Android Apps](cates/security/security.md#secure-android-apps)
 
 
 ## Terminology
