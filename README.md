@@ -2,37 +2,31 @@
 
 Notes, logs and code about Android Development Patterns especially Performance Patterns. #BuildBetterApps #PERFMATTERS
 
-## Categories
 
-### Coding principles
+# Categories
+
+## Coding principles
 
 Aim to write code that can be maintained — not only by yourself, but by anyone else.
 
 * [SOLID](cates/coding_principle/coding_principle.md#solid)
 
 
-### Coding problems
-
-Well-known problems in programming.
-
-* [The diamond problem](cates/coding_problems/coding_problems.md#the-diamond-problem)
-
-
-### Design Patterns
+## Design Patterns
 
 A design pattern is a general repeatable solution to a commonly occurring problem in software design.
 
 * [Delegate design pattern](cates/design_patterns/design_patterns.md#delegate-design-pattern)
 
 
-### Architectural Patterns
+## Architectural Patterns
 
 An architectural pattern is a general, reusable solution to a commonly occurring problem in software architecture within a given context.
 
 * [Guide to app architecture](cates/architectural_patterns/architectural_patterns.md#guide-to-app-architecture)
 
 
-### Android Development Note
+## Android Development Note
 
 Discover surprise Android development knowledge, resources and theory with examples.
 
@@ -51,12 +45,12 @@ Discover surprise Android development knowledge, resources and theory with examp
 * [Java collections](cates/development_note/note.md#java-collections)
 
 
-### Android Development Patterns
+## Android Development Patterns
 
 A series on Best Practices for Android Development. Centered on Android framework APIs, the Support Library, and high level app structure & design. 
 
 
-### Android Performance Note
+## Android Performance Note
 
 Discover surprise knowledge about many aspect of performance in Android apps as well as some micro-optimizations.
 
@@ -66,7 +60,7 @@ Discover surprise knowledge about many aspect of performance in Android apps as 
 * [Power Performance](cates/performance_note/performance_note.md#power-performance)
 
 
-### Android Performance Patterns
+## Android Performance Patterns
 
 A collection of videos focused entirely on helping developers write faster, more performant Android Applications.
 
@@ -75,17 +69,16 @@ A collection of videos focused entirely on helping developers write faster, more
 * [Season 04](cates/performance_patterns/performance_patterns.md#season-04)
 * [Season 05](cates/performance_patterns/performance_patterns.md#season-05)
 
-### Android Jetpack
+
+## Android Jetpack
 
 Jetpack is a suite of libraries, tools, and guidance to help developers write high-quality apps easier. These components help you follow best practices, free you from writing boilerplate code, and simplify complex tasks, so you can focus on the code you care about.
 
-#### Architecture
-
 * [Android Architecture Components](cates/jetpack/android_jetpack.md#android-architecture-components)
-* [WorkManager](cates/jetpack/android_jetpack.md#android-architecture-components)
+* [Behavior](cates/jetpack/android_jetpack.md#behavior)
 
 
-### Testing
+## Testing
 
 Testing your app is an integral part of the app development process. By running tests against your app consistently, you can verify your app's correctness, functional behavior, and usability before you release it publicly.
 
@@ -93,7 +86,7 @@ Testing your app is an integral part of the app development process. By running 
 * [JUnit4 rules with AndroidX Test](cates/testing/testing.md#junit4-rules-with-androidx-test)
 
 
-### Kotlin notes
+## Kotlin notes
 
 Write better Android apps faster with Kotlin - a modern statically typed language - and boost your productivity, increase your developer happiness. 
 
@@ -101,7 +94,21 @@ Write better Android apps faster with Kotlin - a modern statically typed languag
 * [When should use Null in Kotlin](cates/kotlin/kotlin_note.md#when-should-use-null-in-kotlin)
 
 
-### Terminology
+## Coding problems
+
+Well-known problems in programming.
+
+* [The diamond problem](cates/coding_problems/coding_problems.md#the-diamond-problem)
+
+
+## Security
+
+Well-known problems in programming.
+
+* [The diamond problem](cates/coding_problems/coding_problems.md#the-diamond-problem)
+
+
+## Terminology
 
 List of clarification about programming terms, definitions, commands, and glossary. Comparison between similar terminologies.
 
@@ -114,11 +121,11 @@ List of clarification about programming terms, definitions, commands, and glossa
 * [Vector vs ArrayList](cates/terminology/terminology.md#vector-vs-arraylist)
 
 
-### Misc
+## Misc
 
 Miscellaneous.
 
 
-## References
+# References
 
 List of references used. See [this](cates/references.md)

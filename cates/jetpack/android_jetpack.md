@@ -4,16 +4,13 @@ Jetpack is a suite of libraries, tools, and guidance to help developers write hi
 
 ## Android Architecture Components
 
-* [ViewModel](architecture_component.md#viewmodel)
-* [LiveData](architecture_component.md#livedata)
-* [Room](architecture_component.md#room)
+Android architecture components are a collection of libraries that help you design robust, testable, and maintainable apps. Start with classes for managing your UI component lifecycle and handling data persistence.
 
-## WorkManager
+Manage your app's lifecycle with ease. New lifecycle-aware components help you manage your `Activity` and `Fragment` lifecycles. Survive configuration changes, avoid memory leaks and easily load data into your UI.
 
-* [Overview](workmanager.md#overview)
-* [Create and execute background work](workmanager.md#create-and-execute-background-work)
-* [Observing status of Work](workmanager.md#observing-status-of-work)
-* [Chaining Work together](workmanager.md#chaining-work-together)
-* [Canceling a Work](workmanager.md#canceling-a-work)
-* [Unique work sequences](workmanager.md#unique-work-sequences)
-* [Testing your workers](workmanager.md#testing-your-workers)
+* [ViewModel](viewmodel.md#overview)
+* [LiveData](livedata.md#overview)
+* [Room](room.md#overview)
+* [Work Manager](workmanager.md#overview)
+
+## Behavior
