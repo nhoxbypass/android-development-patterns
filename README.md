@@ -78,6 +78,11 @@ Jetpack is a suite of libraries, tools, and guidance to help developers write hi
 * [Behavior](cates/jetpack/android_jetpack.md#behavior)
 
 
+## Other libraries
+
+* [RxAndroid examples](https://github.com/nhoxbypass/RxAndroidExamples)
+
+
 ## Testing
 
 Testing your app is an integral part of the app development process. By running tests against your app consistently, you can verify your app's correctness, functional behavior, and usability before you release it publicly.
