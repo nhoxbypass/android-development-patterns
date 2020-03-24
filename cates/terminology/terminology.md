@@ -78,3 +78,20 @@ List of clarification about programming terms, definitions, commands, and glossa
 ## Type inference
 
 Type inference refers to the automatic detection of the data type of an expression in a programming language. It is a feature present in some strongly statically typed languages. 
+
+
+## Java Generics
+
+| Term        | Exampple          |
+| -------------|---------------|
+| Parameterized type | `List<String>` |
+| Actual type parameter type | `String` |
+| Generic type | `List<E>` |
+| Formal type parameter | `E` |
+| Unbounded wildcard type | `List<?>` |
+| Raw type | `List` |
+| Bounded type parameter | `<E extends Number>` |
+| Recursive type bound | `<T extends Comparable<T>>` |
+| Bounded wildcard type	 | `List<? extends Number>` |
+| Generic method	| `static <E> List<E> asList(E[] a)` |
+| Type token | `String.class`	|
