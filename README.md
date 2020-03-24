@@ -124,6 +124,7 @@ List of clarification about programming terms, definitions, commands, and glossa
 * [Enumerator vs Iterator](cates/terminology/terminology.md#enumerator-vs-iterator)
 * [HashTable vs HashMap](cates/terminology/terminology.md#hashtable-vs-hashmap)
 * [Vector vs ArrayList](cates/terminology/terminology.md#vector-vs-arraylist)
+* [Java Generics](cates/terminology/terminology.md#java-generics)
 
 
 ## Misc
