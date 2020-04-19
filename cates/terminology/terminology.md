@@ -2,6 +2,13 @@
 
 List of clarification about programming terms, definitions, commands, and glossary. Comparison between similar terminologies.
 
+## General Java terms
+
+| Term        | Exampple          |  Exampple          |
+| -------------|---------------|---------------|
+| Market annotation | `@Test` | Annotation with no parameter, simply "marks" the annotated element |
+
+
 ## Serializable vs Parcelable
 
 | Serializable        | Parcelable          |
