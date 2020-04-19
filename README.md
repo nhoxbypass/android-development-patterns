@@ -117,6 +117,7 @@ Well-known problems in programming.
 
 List of clarification about programming terms, definitions, commands, and glossary. Comparison between similar terminologies.
 
+* [General Java terms](cates/terminology/terminology.md#general-java-terms)
 * [Serializable vs Parcelable](cates/terminology/terminology.md#serializable-vs-parcelable)
 * [Nested class](cates/terminology/terminology.md#nested-class)
 * [Abstract Class vs Interface](cates/terminology/terminology.md#abstract-class-vs-interface)
