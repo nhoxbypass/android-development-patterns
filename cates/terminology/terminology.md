@@ -7,6 +7,7 @@ List of clarification about programming terms, definitions, commands, and glossa
 | Term        | Exampple          |  Exampple          |
 | -------------|---------------|---------------|
 | Market annotation | `@Test` | Annotation with no parameter, simply "marks" the annotated element |
+| Market interface | Serializable | An interface that contains no method declarations but merely "marks" a class that implements it as having some property. Marker interface type allows you to catch errors at compile time (compare to runtime of marker annotation |
 
 
 ## Serializable vs Parcelable
