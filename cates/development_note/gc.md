@@ -13,7 +13,7 @@ Every object tree **must** have one or more root objects. As long as the applica
 
 ![GC](../../resources/gc_with_leaks.png "GC")
 
-An object becomes a good candidate for garbage collection when there are no references to it. The first step, GC starts a mark phase. GC traverses a whole objects tree. Every created object has a mark bit which is set to 0 by default. When an object is visited in the mark phase, its mark bit is set to 1 — it means it’s reachable. After that, the GC runs the next phase — sweeping. In this case, the GC searches the memory heap in order to find all objects with a mark bit set to 0 to remove. Then reset mark bits of all reachable objects back to 0.
+An object becomes a good candidate for garbage collection when there are no references to it. The first step, GC starts a **MARK phase**. GC traverses a whole objects tree. Every created object has a mark bit which is set to 0 by default. When an object is visited in the mark phase, its mark bit is set to 1 — it means it’s reachable. After that, the GC runs the next phase — **sweeping**. In this case, the GC searches the memory heap in order to find all objects with a mark bit set to 0 to remove. Then reset mark bits of all reachable objects back to 0.
 
 **The MARK phase has a hidden cost, because it's "stop the world event".**
 
